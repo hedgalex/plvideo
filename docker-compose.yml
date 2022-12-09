@@ -1,0 +1,12 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=plvideo
+      - POSTGRES_PASSWORD=plvideo
+      - POSTGRES_DB=plvideo
+    container_name: plvideo-postgres

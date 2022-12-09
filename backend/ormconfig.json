@@ -1,0 +1,16 @@
+{
+  "type": "postgres",
+  "host": "127.0.0.1",
+  "port": 5432,
+  "username": "plvideo",
+  "password": "plvideo",
+  "database": "plvideo",
+  "entities": [
+    "dist/entities/*.entity{.ts,.js}"
+  ],
+  "migrationsTableName": "migration",
+  "migrations": [
+    "src/migration/*.ts"
+  ],
+  "ssl": false
+}
