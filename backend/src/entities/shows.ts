@@ -1,13 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, JoinColumn, ManyToOne } from 'typeorm';
-import { ShowTypes } from './showTypes.entity';
+import { ShowTypes } from './showTypes';
 
 @Entity()
 export class Shows extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ name: 'imdb_id' })
-  imdbId: number;
 
   @Column()
   title: string;
@@ -36,4 +33,16 @@ export class Shows extends BaseEntity {
 
   @Column({ name: 'type_id' })
   type: number;
+
+  @Column()
+  imdb: string;
+
+  @Column()
+  ororo: string;
+
+  @Column()
+  ac: string;
+
+  @Column()
+  sync: number;
 }

@@ -10,6 +10,10 @@ export const ShowContent = styled.div`
   margin-top: -15px;
 `;
 
+export const ImageContainer = styled.div`
+  width: 200px;
+`;
+
 export const ShowImage = styled.img`
   width: 200px;
   box-shadow: 0 0 2px #aaa;
@@ -18,7 +22,6 @@ export const ShowImage = styled.img`
 export const ShowDescription = styled(Typography)`
   width: 400px;
   padding-left: 50px;
-  background: #edc;
 `;
 
 export const ShowData = styled.div`

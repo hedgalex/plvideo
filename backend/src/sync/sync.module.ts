@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Shows } from '../entities/shows.entity';
-import { ShowTypes } from '../entities/showTypes.entity';
+import { Shows } from '../entities/shows';
+import { ShowTypes } from '../entities/showTypes';
 import { SyncService } from './sync.service';
 
 @Module({

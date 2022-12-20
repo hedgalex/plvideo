@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es5",
     "module": "commonjs",
     "allowJs": true,
     "skipLibCheck": true,
@@ -15,18 +15,18 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "outDir": "./dist",
-    "baseUrl": "./",
-    "suppressImplicitAnyIndexErrors": true,
     "noImplicitAny": false,
     "sourceMap": true,
+    "baseUrl": "./",
     "paths": {
       "~app/*": ["./src/app/*"],
       "~components/*": ["./src/app/components/*"],
-      "~store*": ["./src/app/store/*"],
-      "~shared/*": ["../backend/src/shared/*"],
-    },
+      "~store/*": ["./src/app/store/*"],
+      "~hooks/*": ["./src/app/hooks/*"],
+      "~shared/*": ["../backend/src/shared/*"]
+    }
   },
   "rootDirs": [
-    "./src",
+    "./src"
   ]
 }

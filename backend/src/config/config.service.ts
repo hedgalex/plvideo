@@ -39,7 +39,7 @@ class ConfigService {
       password: this.getValue('POSTGRES_PASSWORD'),
       database: this.getValue('POSTGRES_DATABASE'),
 
-      entities: ['dist/entities/*.entity{.ts,.js}'],
+      entities: ['dist/entities/*{.ts,.js}'],
 
       migrationsTableName: 'migration',
 
@@ -61,6 +61,14 @@ class ConfigService {
   public getAnimecultCookies(): string {
     return this.getValue('ANIME_CULT_COOKIES', false) ?? '';
   }
+
+  public getTVShowsDownloadPath(): string {
+    return this.getValue('DOWNLOAD_PATH_TVSHOWS', true) ?? '';
+  }
+
+  public getMoviesDownloadPath(): string {
+    return this.getValue('DOWNLOAD_PATH_MOVIES', true) ?? '';
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
@@ -69,6 +77,8 @@ const configService = new ConfigService(process.env).ensureValues([
   'POSTGRES_USER',
   'POSTGRES_PASSWORD',
   'POSTGRES_DATABASE',
+  'DOWNLOAD_PATH_TVSHOWS',
+  'DOWNLOAD_PATH_MOVIES',
 ]);
 
 export { configService };

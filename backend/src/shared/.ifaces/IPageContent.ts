@@ -1,4 +1,4 @@
+import { IPageDetails } from './IPageDetails';
 import { IPageSearchResult } from './IPageSearchResult';
-import { IPageShow } from './IPageShow';
 
-export type IPageContent = IPageSearchResult | IPageShow;
+export type IPageContent = IPageSearchResult | IPageDetails;

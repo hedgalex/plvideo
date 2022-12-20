@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Tasks } from '~entities/tasks.entity';
+import { Tasks } from '~server/entities/tasks';
 import { configService } from '../../config/config.service';
 import { directDownload } from '../utils';
 import { IDownloaderProps } from '../.ifaces/IDownloaderProps';

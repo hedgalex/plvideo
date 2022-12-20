@@ -6,7 +6,7 @@
   "password": "plvideo",
   "database": "plvideo",
   "entities": [
-    "dist/entities/*.entity{.ts,.js}"
+    "dist/entities/*.{ts,js}"
   ],
   "migrationsTableName": "migration",
   "migrations": [

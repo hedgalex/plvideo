@@ -1,11 +1,14 @@
-import { EShowTypes } from '../.consts';
+import { EResource, EShowTypes } from '../.consts';
+import { IEpisode } from './IEpisode';
 
 export interface IPageShow {
-  imdbId?: string;
-  providerTypeId?: number;
+  resource: EResource;
   title: string;
-  imagePreview: string;
+  image: string;
   description: string;
   year: number;
   type: EShowTypes;
+  episodes: IEpisode[];
+  seasons: number[];
+  resourceShowId: string;
 }

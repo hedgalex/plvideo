@@ -1,6 +1,7 @@
 import axios from 'axios';
 import parse from 'node-html-parser';
 import { IImdbSyncData } from './.ifaces/IImdbSyncData';
+import { hashShowId } from '../utils/hash';
 
 const toInt = (id: string): number => parseInt(id?.replace(/\D*/g, ''));
 
@@ -33,9 +34,10 @@ const parseData = (data: string, type: number): IImdbSyncData[] => {
       velocityMeter?.querySelector('.titlemeter')?.getAttribute('class')?.indexOf('down') >= 0 ? -1 : 1;
 
     const velocityValue = velocityDirection * toInt(velocityMeter?.text ?? '0');
-    const imdbId = toInt(record.querySelector('.watchlistColumn .wlb_ribbon').getAttribute('data-tconst'));
+    const imdbId = record.querySelector('.watchlistColumn .wlb_ribbon').getAttribute('data-tconst');
 
     return {
+      id: hashShowId(title, year),
       imdbId,
       imagePreview: posterSmall,
       year,

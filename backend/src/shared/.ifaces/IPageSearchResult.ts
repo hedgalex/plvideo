@@ -1,7 +1,7 @@
-import { ISearchItem } from './ISearchItem';
+import { IShowItem } from './IShowItem';
 
 export interface IPageSearchResult {
-  items: ISearchItem[];
+  items: Partial<IShowItem>[];
   page?: number;
   count?: number;
 }

@@ -9,41 +9,41 @@ import HistoryIcon from '@mui/icons-material/History';
 import { TVShowsPage } from './pages/TVShows';
 import { SearchPage } from './pages/Search';
 import { ShowPage } from './pages/Show';
+import { Downloads } from './pages/Downloads';
 
 export const Routes: React.FC = () => (
-  <>
-    <Container>
-      <Nav>
-        <Logo>PlVideo</Logo>
-        <NavItem href="/tvshows">
-          <TvIcon className="icon" width="20px" height="20px" />
-          <Typography ml="20px">Top TV Shows</Typography>
-        </NavItem>
-        <NavItem href="/movies">
-          <LocalMoviesIcon className="icon" width="20px" height="20px" />
-          <Typography ml="20px">Top Movies</Typography>
-        </NavItem>
-        <NavItem href="/search">
-          <SearchIcon className="icon" width="20px" height="20px" />
-          <Typography ml="20px">Search</Typography>
-        </NavItem>
-        <NavItem href="/downloads">
-          <DownloadIcon className="icon" width="20px" height="20px" />
-          <Typography ml="20px">Downloads</Typography>
-        </NavItem>
-        <NavItem href="/recent">
-          <HistoryIcon className="icon" width="20px" height="20px" />
-          <Typography ml="20px">Recent</Typography>
-        </NavItem>
-      </Nav>
-      <RouterRoutes>
-        <Route path="/" element={<TVShowsPage />} />
-        <Route path="/tvshows" element={<TVShowsPage />} />
-        <Route path="/movies" element={<TVShowsPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/show/:service/:showId" element={<ShowPage />} />
-        <Route path="/downloads" element={<TVShowsPage />} />
-      </RouterRoutes>
-    </Container>
-  </>
+  <Container>
+    <Nav>
+      <Logo>PlVideo</Logo>
+      <NavItem href="/tvshows">
+        <TvIcon className="icon" width="20px" height="20px" />
+        <Typography ml="20px">Top TV Shows</Typography>
+      </NavItem>
+      <NavItem href="/movies">
+        <LocalMoviesIcon className="icon" width="20px" height="20px" />
+        <Typography ml="20px">Top Movies</Typography>
+      </NavItem>
+      <NavItem href="/search">
+        <SearchIcon className="icon" width="20px" height="20px" />
+        <Typography ml="20px">Search</Typography>
+      </NavItem>
+      <NavItem href="/downloads">
+        <DownloadIcon className="icon" width="20px" height="20px" />
+        <Typography ml="20px">Downloads</Typography>
+      </NavItem>
+      <NavItem href="/recent">
+        <HistoryIcon className="icon" width="20px" height="20px" />
+        <Typography ml="20px">Recent</Typography>
+      </NavItem>
+    </Nav>
+    <RouterRoutes>
+      <Route path="/" element={<TVShowsPage />} />
+      <Route path="/tvshows" element={<TVShowsPage />} />
+      <Route path="/movies" element={<TVShowsPage />} />
+      <Route path="/search" element={<SearchPage />} />
+      <Route path="/show/:resource/:resourceShowId" element={<ShowPage />} />
+      <Route path="/show/:showId" element={<ShowPage />} />
+      <Route path="/downloads" element={<Downloads />} />
+    </RouterRoutes>
+  </Container>
 );

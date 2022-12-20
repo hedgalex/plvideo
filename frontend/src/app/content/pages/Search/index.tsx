@@ -5,11 +5,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { IState, useAppDispatch } from '~store/index';
 import { searchAction } from '~store/pageSlice';
 import { Input } from '~components/input/styles';
-import { Episode, ISearchResultItem } from '~components/episode';
+import { Episode } from '~components/episode';
 import { Loader } from '~app/styles';
 import { Content, Header } from '~app/content/styles';
 import { SearchContainer, StyledChip } from './styles';
-import { EServices, EShowTypes } from '~shared/.consts';
+import { EResource, EShowTypes } from '~shared/.consts';
 import { IPageSearchResult } from '~shared/.ifaces';
 
 export const SearchPage: React.FC = () => {
@@ -17,9 +17,9 @@ export const SearchPage: React.FC = () => {
   const navigator = useNavigate();
   const dispatch = useAppDispatch();
 
-  const hash = location.hash.replace(/#/, '');
-  const [searchText, setSearchText] = useState<string>();
-  const [activeService, setActiveService] = useState<EServices>(EServices.IMDB);
+  const hash = decodeURIComponent(location.hash.replace(/#/, ''));
+  const [searchText, setSearchText] = useState<string>('');
+  const [activEResource, setActivEResource] = useState<EResource>(EResource.IMDB);
 
   const { isLoading, data } = useSelector((state: IState) => state.page);
   const { items = [] } = data as IPageSearchResult;
@@ -27,16 +27,16 @@ export const SearchPage: React.FC = () => {
   useEffect(() => {
     setSearchText(hash);
     if (hash.length > 2) {
-      dispatch(searchAction({ searchText: hash, service: activeService }));
+      dispatch(searchAction({ searchText: hash, resource: activEResource }));
     }
-  }, [hash, activeService]);
+  }, [hash, activEResource]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    navigator(`#${event?.target?.value}` ?? '');
+    navigator(`#${encodeURIComponent(event?.target?.value)}` ?? '');
   };
 
-  const handleChipClick = (name: EServices) => () => {
-    setActiveService(name);
+  const handleChipClick = (name: EResource) => () => {
+    setActivEResource(name);
   };
 
   return (
@@ -50,29 +50,32 @@ export const SearchPage: React.FC = () => {
         </Box>
         <Stack direction="row" spacing="5px" mt="8px">
           <StyledChip
-            isActive={activeService === EServices.IMDB}
+            isSelected={activEResource === EResource.IMDB}
+            className="chip-label"
             size="small"
             label="IMDB"
-            onClick={handleChipClick(EServices.IMDB)}
+            onClick={handleChipClick(EResource.IMDB)}
           />
           <StyledChip
-            isActive={activeService === EServices.ORORO}
+            isSelected={activEResource === EResource.ORORO}
+            className="chip-label"
             size="small"
             label="ORORO"
-            onClick={handleChipClick(EServices.ORORO)}
+            onClick={handleChipClick(EResource.ORORO)}
           />
           <StyledChip
-            isActive={activeService === EServices.AC}
+            isSelected={activEResource === EResource.AC}
+            className="chip-label"
             size="small"
             label="AC"
-            onClick={handleChipClick(EServices.AC)}
+            onClick={handleChipClick(EResource.AC)}
           />
         </Stack>
       </SearchContainer>
       {isLoading && <Loader />}
       {!isLoading &&
-        items.map((item: ISearchResultItem) => (
-          <Episode {...item} subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'} />
+        items.map((item) => (
+          <Episode key={item.resourceShowId} {...item} subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'} />
         ))}
     </Content>
   );

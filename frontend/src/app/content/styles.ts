@@ -52,6 +52,7 @@ export const Logo = styled.div`
 `;
 
 export const Content = styled.div`
+  max-width: 900px;
   flex-grow: 1;
   padding: 40px;
   border-radius: 0 20px 20px 0;

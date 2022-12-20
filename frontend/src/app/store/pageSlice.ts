@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IPageContent } from '~shared/.ifaces';
-import { EServices } from '~shared/.consts';
-import { searchResult, showData } from './mocks/shows';
+import { EResource } from '~shared/.consts';
+import { searchResult } from './mocks/shows';
+import { rickAndMortyShow } from './mocks/ororo-rick-and-morty';
 
 export interface IPage {
   data: IPageContent;
@@ -16,46 +17,50 @@ const initialState = {
 
 export const searchAction = createAsyncThunk(
   'search/fetch',
-  async ({ searchText, service }: { searchText: string; service: EServices }) =>
-    axios.get(`/api/search`, { params: { searchText, service } }),
+  async ({ searchText, resource }: { searchText: string; resource: EResource }) => {
+    const { data } = await axios.get(`/api/search`, { params: { searchText, resource } });
+    return data;
+  },
 );
 
-export const retriveShowAction = createAsyncThunk(
+export const fetchShowAction = createAsyncThunk(
   'show/fetch',
-  async ({ service, showId }: { service: string; showId: string }) =>
-    axios.get(`/api/show`, { params: { service, showId } }),
+  async ({ resource, resourceShowId }: { resource: string; resourceShowId: string }) => {
+    const { data } = await axios.get(`/api/details`, { params: { resource, resourceShowId } });
+    return data;
+  },
 );
 
 const pageSlice = createSlice({
   name: 'page',
   initialState,
   reducers: {},
-  extraReducers: {
-    'show/fetch/pending': (state: IPage) => {
+  extraReducers: (builder) => {
+    builder.addCase(fetchShowAction.pending, (state: IPage) => {
       state.isLoading = true;
-    },
-    'show/fetch/fulfilled': (state: IPage, { payload }) => {
+    });
+    builder.addCase(fetchShowAction.fulfilled, (state: IPage, { payload }) => {
       state.data = payload;
       state.isLoading = false;
-    },
-    'show/fetch/rejected': (state: IPage) => {
+    });
+    builder.addCase(fetchShowAction.rejected, (state: IPage) => {
       state.isLoading = false;
-      state.data = showData;
-    },
-    'search/fetch/pending': (state: IPage) => {
+      state.data = rickAndMortyShow;
+    });
+    builder.addCase(searchAction.pending, (state: IPage) => {
       state.isLoading = true;
-    },
-    'search/fetch/fulfilled': (state: IPage, { payload }) => {
-      state.data = payload?.data;
+    });
+    builder.addCase(searchAction.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
       state.isLoading = false;
-    },
-    'search/fetch/rejected': (state: IPage) => {
+    });
+    builder.addCase(searchAction.rejected, (state: IPage) => {
       state.data = {
         page: 1,
         items: searchResult,
       };
       state.isLoading = false;
-    },
+    });
   },
 });
 

@@ -1,16 +1,16 @@
 import axios from 'axios';
 import parse from 'node-html-parser';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { configService } from '~config/config.service';
 import { IImdbSearchItem } from './.ifaces/IImdbSearchItem';
-import { ISearchItem } from '~shared/.ifaces';
-import { EShowTypes } from '../shared/.consts';
+import { IShowItem } from '~shared/.ifaces';
+import { EResource, EShowTypes } from '../shared/.consts';
+import { hashShowId } from '../utils/hash';
 
 @Injectable()
 export class SearchService {
   private readonly ororoHeaders: Record<string, string>;
   private readonly animecultHeaders: Record<string, string>;
-  private readonly logger = new Logger(SearchService.name);
 
   constructor() {
     this.ororoHeaders = {
@@ -24,23 +24,25 @@ export class SearchService {
     };
   }
 
-  async searchImdb(text: string): Promise<ISearchItem[]> {
+  async searchImdb(text: string): Promise<IShowItem[]> {
     const response = await axios(`https://v3.sg.media-imdb.com/suggestion/x/${text}.json`);
     const items = response?.data?.d?.filter((item: IImdbSearchItem) => item.qid === 'movie' || item.qid === 'tvSeries');
 
-    return items?.map(
-      (item: IImdbSearchItem): ISearchItem => ({
-        imdbId: item?.id?.replace(/tt/, '') ?? '0',
-        providerTypeId: 3,
-        title: item?.l ?? '',
+    return items?.map((item: IImdbSearchItem): IShowItem => {
+      const title = item?.l ?? '';
+      return {
+        resource: EResource.IMDB,
+        title,
+        hash: hashShowId(title, item.y),
         imagePreview: item?.i?.imageUrl,
         type: item.qid === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
         year: item.y,
-      }),
-    );
+        resourceShowId: item?.id,
+      };
+    });
   }
 
-  async searchAnimecult(text: string): Promise<ISearchItem[]> {
+  async searchAnimecult(text: string): Promise<IShowItem[]> {
     const domain = 'https://z.animecult.org';
     const response = await axios(`${domain}/?key=${text}`, {
       headers: this.animecultHeaders,
@@ -61,22 +63,25 @@ export class SearchService {
         const details = content.pop()?.split(/\|/) ?? [];
         const episodes = parseInt(details[0]?.replace(/\D*/g, '') ?? '0', 10);
         const imagePreview = `${domain}${item.querySelector('.anime-img')?.getAttribute('src')}`;
+        const resourceShowId = link.replace(/\/(.*?)\/(.*?)/, '$2');
+        const year = parseInt(details[1]?.replace(/\D*/g, '') ?? '0', 10);
 
         return {
-          serviceId: link.replace(/\/(.*?)\/(.*?)/, '$2'),
+          resourceShowId,
+          hash: hashShowId(title, year),
+          resource: EResource.AC,
           title,
-          link,
-          year: parseInt(details[1]?.replace(/\D*/g, '') ?? '0', 10),
+          year,
           episodes,
           type: EShowTypes.TVSHOW,
           imagePreview,
-        } as ISearchItem;
+        } as IShowItem;
       }) ?? [];
 
     return items;
   }
 
-  async searchOroro(text: string): Promise<ISearchItem[]> {
+  async searchOroro(text: string): Promise<IShowItem[]> {
     const response = await axios(`https://ororo.tv/en/api/frontend/search?query=${text}`, {
       headers: this.ororoHeaders,
     });
@@ -92,18 +97,22 @@ export class SearchService {
         const details = (p?.[1]?.text ?? '').split(/,/);
         const year = parseInt(details?.[1]?.trim() ?? '0', 10);
         const type = details?.[0]?.replace(/\s*/, '').toLowerCase() ?? '';
-        if (type !== 'tvshow' && type !== 'movie') {
+        const imagePreview = item.querySelector('.search-results-item-image img')?.getAttribute('src');
+        if (type !== 'tv show' && type !== 'movie') {
           return null;
         }
 
+        const resourceShowId = link;
+
         return {
-          serviceId: link.replace(/\/(shows|movies)\/(.*?)/, '$2'),
-          providerTypeId: 1,
+          imagePreview,
+          resourceShowId: resourceShowId.substring(1).replace(/\//, '-'),
+          hash: hashShowId(title, year),
+          resource: EResource.ORORO,
           title,
           type: type === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
           year,
-          link,
-        } as ISearchItem;
+        } as IShowItem;
       }) ?? [];
 
     return items.filter((item) => item !== null);

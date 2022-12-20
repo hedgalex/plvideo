@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Shows } from '~entities/shows.entity';
+import { Shows } from '~server/entities/shows';
 import { getMovies, tvShows as getTVShows } from './utils';
 
 @Injectable()
@@ -17,13 +17,14 @@ export class SyncService {
   private async addTopsToDatabase(shows, type: number) {
     for await (const show of shows) {
       const existTvShow = await this.showsRepository.findOne({
-        where: { imdbId: show.imdbId },
+        where: { id: show.id },
       });
 
       if (existTvShow) {
         await this.showsRepository.update(
           { id: existTvShow.id },
           {
+            imdbId: show.imdbId,
             popularity: show.popularity,
             popularityIncline: show.popularityIncline,
             ratingImdb: show.ratingImdb,
@@ -32,6 +33,7 @@ export class SyncService {
         );
       } else {
         await this.showsRepository.insert({
+          id: show.id,
           imdbId: show.imdbId,
           image: show.imagePreview,
           year: show.year,

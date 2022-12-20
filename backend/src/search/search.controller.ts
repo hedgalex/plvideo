@@ -1,7 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, ParseEnumPipe, Query } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { IPageSearchResult } from '~shared/.ifaces';
-import { EServices } from '~shared/.consts';
+import { EResource } from '~shared/.consts';
 
 @Controller('/api/search')
 export class SearchController {
@@ -10,18 +10,18 @@ export class SearchController {
   @Get()
   async searchImdb(
     @Query('searchText') text: string,
-    @Query('service') service: EServices,
+    @Query('resource', new ParseEnumPipe(EResource)) resource: EResource,
   ): Promise<IPageSearchResult> {
-    switch (service) {
-      case EServices.IMDB: {
+    switch (resource) {
+      case EResource.IMDB: {
         const items = await this.searchService.searchImdb(text);
         return { items };
       }
-      case EServices.ORORO: {
+      case EResource.ORORO: {
         const items = await this.searchService.searchOroro(text);
         return { items };
       }
-      case EServices.AC: {
+      case EResource.AC: {
         const items = await this.searchService.searchAnimecult(text);
         return { items };
       }

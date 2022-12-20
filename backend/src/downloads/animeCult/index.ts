@@ -1,7 +1,7 @@
 import axios from 'axios';
 import parse from 'node-html-parser';
 import { Logger } from '@nestjs/common';
-import { Tasks } from '~entities/tasks.entity';
+import { Tasks } from '~server/entities/tasks';
 import { directDownload } from '../utils';
 import { IDownloaderProps } from '../.ifaces/IDownloaderProps';
 import { configService } from '../../config/config.service';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Tasks } from '../entities/tasks.entity';
+import { Tasks } from '../entities/tasks';
 import { animeCultDownloader } from './animeCult';
 import { ororoDownloader } from './ororo';
 import { IDownloaderProps } from './.ifaces/IDownloaderProps';
