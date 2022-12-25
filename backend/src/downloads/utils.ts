@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import progress from 'progress-stream';
 import axios from 'axios';
+import { AbortController } from 'node-abort-controller';
 import { IDownloaderProps } from './.ifaces/IDownloaderProps';
 
 export const directDownload = async (url: string, filepath: string, props: IDownloaderProps) => {
@@ -18,10 +19,11 @@ export const directDownload = async (url: string, filepath: string, props: IDown
 
   const fileWriteStream = fs.createWriteStream(filepath);
   const spyStream = progress({ time: 3000 });
+  const abortController = new AbortController();
 
   spyStream.on('progress', (data: { transferred: number; percentage: number }): void => {
     if (props.onProgress) {
-      props.onProgress(data?.transferred, data?.percentage);
+      props.onProgress(data?.transferred, data?.percentage, abortController);
     }
   });
 
@@ -30,6 +32,7 @@ export const directDownload = async (url: string, filepath: string, props: IDown
     url,
     responseType: 'stream',
     headers: props.headers,
+    signal: abortController.signal,
   });
 
   if (props.onInit) {

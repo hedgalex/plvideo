@@ -6,10 +6,14 @@ import { Tasks } from '~server/entities/tasks';
 import { configService } from '../config/config.service';
 import { DetailsService } from '../details/details.service';
 import { DownloadService } from '../downloads/download.service';
-import { getFullEpisodeId, getSeason } from '~shared/.consts';
-import { hashShowId } from '../utils/hash';
+import { EResource, EShowTypes, ETaskStatus, getFullEpisodeId } from '~shared/.consts';
+import { ITask } from '../shared/.ifaces';
+import { Episodes } from '../entities/episodes';
+import { getMovieFilePath, getTVShowFilePath } from '../utils/paths';
 
 const ORORO_URL = 'https://ororo.tv/en';
+const AC_URL = 'https://z.animecult.org/serial/';
+
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -18,14 +22,12 @@ export class TasksService {
   @Inject(DetailsService)
   private readonly detailsService: DetailsService;
   private readonly watchdogTimeout: number;
-  private readonly tvShowsDownloadPath: string;
-  private readonly moviesDownloadPath: string;
   constructor(
     @InjectRepository(Tasks)
     private tasksRepository: Repository<Tasks>,
+    @InjectRepository(Episodes)
+    private episodesRepository: Repository<Episodes>,
   ) {
-    this.tvShowsDownloadPath = configService.getTVShowsDownloadPath();
-    this.moviesDownloadPath = configService.getMoviesDownloadPath();
     this.watchdogTimeout = configService.getWatchdogTimeout();
   }
 
@@ -56,7 +58,7 @@ export class TasksService {
       await this.tasksRepository.update({ id: idleTask.id }, { size, started: new Date().getTime() });
     };
 
-    const onProgress = async (downloaded: number, percentage: number): Promise<void> => {
+    const onProgress = async (downloaded: number, percentage: number, controller: AbortController): Promise<void> => {
       if (percentage === 100) {
         await this.tasksRepository.update(
           { id: idleTask.id },
@@ -64,6 +66,13 @@ export class TasksService {
         );
         this.logger.log(`Finished downloading ${idleTask.path}`);
       } else {
+        const task = await this.tasksRepository.findOne({ where: { id: idleTask.id } });
+        if (!task) {
+          controller && controller.abort();
+          this.logger.warn(`Downloading ${idleTask.url} to ${idleTask.path} has been interrupted.`);
+          //TODO Remove files
+          return;
+        }
         await this.tasksRepository.update({ id: idleTask.id }, { downloaded });
       }
     };
@@ -88,60 +97,89 @@ export class TasksService {
     }
   }
 
-  async getAllTasks() {
-    return await this.tasksRepository.find({
-      relations: { taskStatus: true, downloadResource: true, show: true },
+  async getAllTasks(): Promise<ITask[]> {
+    const tasks = await this.tasksRepository.find({
+      relations: { taskStatus: true, downloadResource: true, episode: { show: true } },
       order: { taskStatusId: 'ASC' },
     });
+
+    return (
+      tasks?.map((task) => ({
+        id: task.id,
+        title: task.episode?.title,
+        subtitle: getFullEpisodeId(task.episode?.season ?? 0, task.episode.episode ?? 0),
+        image: task.episode?.show.image,
+        started: task.started,
+        finished: task.finished,
+        size: task.size,
+        downloaded: task.downloaded,
+        resource: task.downloadResource.name as EResource,
+        taskStatus: task.taskStatus.name as ETaskStatus,
+      })) ?? []
+    );
   }
 
-  async addOroroTask(resourceShowId: string, resourceEpisodeId: string) {
-    const ororoId = resourceShowId.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
-    const show = await this.detailsService.getDetailsOroro(resourceShowId);
-    const showName = `${show.title} (${show.year})`;
-    const showId = hashShowId(show.title, show.year);
-    if (resourceEpisodeId) {
-      const episode = show?.episodes?.find((episode) => episode.resourceEpisodeId === resourceEpisodeId);
-      if (episode) {
-        const episodeNumber = getFullEpisodeId(episode.season, episode.episode);
-
-        this.tasksRepository.insert({
-          title: episodeNumber,
-          showId,
-          hash: episode.hash,
-          path: `${this.tvShowsDownloadPath}/${showName}/${getSeason(episode.season)}/${
-            show.title
-          } - ${episodeNumber}.mp4`,
-          url: `${ORORO_URL}${ororoId}/videos/${resourceEpisodeId}/download`,
-          downloadResourceId: 1,
-        });
+  async addTask(id: number, resource: EResource) {
+    const task = await this.tasksRepository.findOne({ where: { id } });
+    if (task) {
+      throw new Error('The task has found');
+    }
+    switch (resource) {
+      case EResource.AC: {
+        return await this.addAnimeCultTask(id);
       }
+      case EResource.ORORO:
+      default: {
+        return await this.addOroroTask(id);
+      }
+    }
+  }
+
+  async addOroroTask(episodeId: number) {
+    const episode = await this.episodesRepository.findOne({ where: { id: episodeId }, relations: { show: true } });
+    if (!episode?.show?.ororo || !episode?.ororo) {
+      throw new Error('No episode found');
+    }
+
+    const { show } = episode;
+    const ororoId = show.ororo.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
+    const downloadUrl = `${ORORO_URL}${ororoId}/videos/${episode.ororo}/download`;
+    if (show.type === EShowTypes.TVSHOW) {
+      console.info('down', downloadUrl);
+      this.tasksRepository.insert({
+        id: episode.id,
+        path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
+        url: downloadUrl,
+        downloadResourceId: 1,
+      });
     } else {
       this.tasksRepository.insert({
-        title: show.title,
-        showId,
-        hash: showId,
-        path: `${this.moviesDownloadPath}/${showName}/${show.title} (${show.year}).mp4`,
-        url: `${ORORO_URL}${ororoId}/videos/${resourceEpisodeId}/download`,
+        id: episode.id,
+        path: getMovieFilePath(show.title, show.year, 'mp4'),
+        url: downloadUrl,
         downloadResourceId: 1,
       });
     }
   }
 
-  async addAnimeCultTask(resourceShowId: string, resourceEpisodeId: string) {
-    console.info(resourceShowId, resourceEpisodeId);
-
-    if (resourceEpisodeId) {
-      //tvshow
-    } else {
-      //movie
+  async addAnimeCultTask(episodeId: number) {
+    const episode = await this.episodesRepository.findOne({ where: { id: episodeId }, relations: { show: true } });
+    if (!episode?.show?.ac) {
+      throw new Error('No episode found');
     }
-    // this.tasksRepository.insert({
 
-    // });
+    const { show } = episode;
+    const downloadUrl = `${AC_URL}${show.ac}/episode/${episode.episode}`;
+
+    this.tasksRepository.insert({
+      id: episode.id,
+      path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
+      url: downloadUrl,
+      downloadResourceId: 2,
+    });
   }
 
-  async removeTask(hash: number) {
-    return await this.tasksRepository.delete({ hash });
+  async removeTask(id: number) {
+    return await this.tasksRepository.delete({ id });
   }
 }

@@ -33,7 +33,7 @@ export class SearchService {
       return {
         resource: EResource.IMDB,
         title,
-        hash: hashShowId(title, item.y),
+        showId: hashShowId(title, item.y),
         imagePreview: item?.i?.imageUrl,
         type: item.qid === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
         year: item.y,
@@ -68,7 +68,7 @@ export class SearchService {
 
         return {
           resourceShowId,
-          hash: hashShowId(title, year),
+          showId: hashShowId(title, year),
           resource: EResource.AC,
           title,
           year,
@@ -107,7 +107,7 @@ export class SearchService {
         return {
           imagePreview,
           resourceShowId: resourceShowId.substring(1).replace(/\//, '-'),
-          hash: hashShowId(title, year),
+          showId: hashShowId(title, year),
           resource: EResource.ORORO,
           title,
           type: type === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,

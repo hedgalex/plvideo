@@ -20,22 +20,14 @@ export const getAllTasks = createAsyncThunk('tasks/fetch', async () => {
 
 export const addTaskAction = createAsyncThunk(
   'tasks/add',
-  async ({
-    resource,
-    resourceShowId,
-    resourceEpisodeId = '',
-  }: {
-    resource: EResource;
-    resourceShowId: string;
-    resourceEpisodeId?: string;
-  }) => {
-    const { data } = await axios.put(`/api/tasks`, { resource, resourceShowId, resourceEpisodeId });
+  async ({ id, resource }: { id: number; resource?: EResource }) => {
+    const { data } = await axios.put(`/api/tasks`, { id, resource });
     return data;
   },
 );
 
-export const removeTaskAction = createAsyncThunk('tasks/remove', async ({ hash }: { hash: number }) => {
-  const { data } = await axios.delete(`/api/tasks`, { params: { hash } });
+export const removeTaskAction = createAsyncThunk('tasks/remove', async ({ id }: { id: number }) => {
+  const { data } = await axios.delete(`/api/tasks`, { params: { id } });
   return data;
 });
 
@@ -51,12 +43,6 @@ const tasksSlice = createSlice({
     builder.addCase(getAllTasks.rejected, (state: ITasks) => {
       state.data = tasks as any;
       state.isLoaded = true;
-    });
-    builder.addCase(addTaskAction.fulfilled, (state: ITasks, { payload }) => {
-      state.data = payload.data;
-    });
-    builder.addCase(removeTaskAction.fulfilled, (state: ITasks, { payload }) => {
-      state.data = payload;
     });
   },
 });

@@ -1,7 +1,7 @@
 import  { EResource, EShowTypes } from '~shared/.consts';
 
 export interface IShowItem {
-  hash: number;
+  showId: number;
   resource: EResource;
   resourceShowId?: string;
   resourceEpisodeId?: string;

@@ -1,34 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, BaseEntity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { DownloadResources } from './downloadResources';
 import { TaskStatuses } from './taskStatuses';
-import { Shows } from './shows';
 import { Episodes } from './episodes';
 
 @Entity()
 export class Tasks extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn('bigint', {
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
+  })
   id: number;
 
-  @ManyToOne(() => Shows, (show) => show, { cascade: true })
-  @JoinColumn({ name: 'show_id', referencedColumnName: 'id' })
-  show: Shows;
-
-  @Column({ name: 'show_id' })
-  showId: number;
-
   @ManyToOne(() => Episodes, (episode) => episode, { cascade: true })
-  @JoinColumn({ name: 'episode_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'id', referencedColumnName: 'id' })
   episode: Episodes;
-
-  @Column({ name: 'episode_id' })
-  episodeId: number;
-
-  @ManyToOne(() => DownloadResources, (downloadResource) => downloadResource.name, { cascade: true })
-  @JoinColumn({ name: 'download_resource_id', referencedColumnName: 'id' })
-  downloadResource: DownloadResources;
-
-  @Column({ name: 'download_resource_id' })
-  downloadResourceId: number;
 
   @Column()
   started: number;
@@ -47,6 +34,13 @@ export class Tasks extends BaseEntity {
 
   @Column()
   size: number;
+
+  @ManyToOne(() => DownloadResources, (downloadResource) => downloadResource.name, { cascade: true })
+  @JoinColumn({ name: 'download_resource_id', referencedColumnName: 'id' })
+  downloadResource: DownloadResources;
+
+  @Column({ name: 'download_resource_id' })
+  downloadResourceId: number;
 
   @ManyToOne(() => TaskStatuses, (taskStatus) => taskStatus.name, { cascade: true })
   @JoinColumn({ name: 'task_status_id', referencedColumnName: 'id' })

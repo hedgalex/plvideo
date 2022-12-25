@@ -1,9 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, BaseEntity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Shows } from './shows';
 
 @Entity()
 export class Episodes extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn('bigint', {
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
+  })
   id: number;
 
   @Column()
@@ -15,10 +20,22 @@ export class Episodes extends BaseEntity {
   @Column()
   episode: number;
 
-  @ManyToOne(() => Shows, (show) => show, { cascade: true })
+  @ManyToOne(() => Shows, (show) => show.episodes)
   @JoinColumn({ name: 'show_id', referencedColumnName: 'id' })
   show: Shows;
 
   @Column({ name: 'show_id' })
-  showId: string;
+  showId: number;
+
+  @Column()
+  release: number;
+
+  @Column()
+  imdb: string;
+
+  @Column()
+  ororo: string;
+
+  @Column()
+  ac: string;
 }

@@ -41,8 +41,7 @@ export const Routes: React.FC = () => (
       <Route path="/tvshows" element={<TVShowsPage />} />
       <Route path="/movies" element={<TVShowsPage />} />
       <Route path="/search" element={<SearchPage />} />
-      <Route path="/show/:resource/:resourceShowId" element={<ShowPage />} />
-      <Route path="/show/:showId" element={<ShowPage />} />
+      <Route path="/show/:id" element={<ShowPage />} />
       <Route path="/downloads" element={<Downloads />} />
     </RouterRoutes>
   </Container>

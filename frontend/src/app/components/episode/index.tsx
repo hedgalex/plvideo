@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { IShowItem } from '~shared/.ifaces';
-import { ETaskStatus } from '~shared/.consts';
-import { useProgress } from '~hooks/useProgress';
-import { addTaskAction, removeTaskAction } from '~store/tasksSlice';
+import { EResource, ETaskStatus } from '~shared/.consts';
+import { useProgress } from '~app/hooks/useProgress';
 import { useAppDispatch } from '~store/index';
+import { addShowAction } from '~store/pageSlice';
 import { getSizeTitle } from './utils';
 import {
   Action,
@@ -24,77 +23,65 @@ import {
 } from './styles';
 
 export interface IEpisodeProps {
-  onClick?: () => void;
-  progress?: number;
-  isDownloadable?: boolean;
+  id?: number;
+  title?: string;
   subtitle?: string;
+  resources?: EResource[];
+  resourceShowId?: string;
+  resourceEpisodeId?: string;
+  imagePreview?: string;
+  isDownloadable?: boolean;
 }
 
-export const Episode: React.FC<Partial<IShowItem> & IEpisodeProps> = ({
-  title,
-  hash,
-  subtitle,
-  resource,
-  resourceShowId,
-  resourceEpisodeId,
+export const Episode: React.FC<IEpisodeProps> = ({
+  id = 0,
+  title = '',
+  subtitle = '',
+  resources = [],
+  resourceShowId = '',
   imagePreview,
-  isDownloadable,
+  isDownloadable = false,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const progress = useProgress(hash ?? 0, { enabled: !!hash && isDownloadable });
-  const [status, setStatus] = useState<ETaskStatus>(progress.taskStatus);
-
-  const handleClick = async () => {
-    console.info(hash);
-    navigate(`/show/${hash}`);
-  };
+  const { status, changeStatus, size, downloaded } = useProgress(id, {
+    enabled: !!id && isDownloadable,
+  });
 
   const handleActionClick = useCallback(() => {
-    if (status === ETaskStatus.LOADING) {
-      return;
-    }
+    const resource = resources.find((item) => item !== EResource.IMDB);
+    changeStatus(resource);
+  }, [status, resources]);
 
-    if (status === ETaskStatus.NONE && resourceShowId && resource) {
-      setStatus(ETaskStatus.LOADING);
-      dispatch(addTaskAction({ resource, resourceShowId, resourceEpisodeId }));
-    }
+  const navigateToShowsPage = async () => {
+    await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId: id }));
+    navigate(`/show/${id}`);
+  };
 
-    if ([ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(status) && hash) {
-      setStatus(ETaskStatus.NONE);
-      dispatch(removeTaskAction({ hash }));
-    }
-  }, [status, progress.taskStatus]);
-
-  useEffect(() => {
-    setStatus(progress.taskStatus);
-  }, [progress.taskStatus]);
-
-  const downloaded = progress.size > 0 ? Math.floor((100 * progress.downloaded) / progress.size) : 0;
   return (
     <EpisodeItem>
       {imagePreview && <ItemImage src={imagePreview} />}
       <Info>
         <Progress>
-          {progress.taskStatus !== ETaskStatus.NONE && (
+          {status !== ETaskStatus.NONE && (
             <>
               <ProgressInfo>{downloaded}%</ProgressInfo>
               <Download completed={downloaded} />
             </>
           )}
         </Progress>
-        <Details onClick={handleClick} allowClick={!isDownloadable} hasImage={!!imagePreview}>
+        <Details onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!imagePreview}>
           <Title>{title}</Title>
           <Subtitle>{subtitle}</Subtitle>
         </Details>
-        {progress.size > 0 && <Size>{getSizeTitle(progress.size)}</Size>}
+        {size > 0 && <Size>{getSizeTitle(size)}</Size>}
         {isDownloadable && (
           <>
-            {status === ETaskStatus.LOADING && <StyledSpinner />}
-            {status !== ETaskStatus.LOADING && (
-              <Action status={progress.taskStatus} onClick={handleActionClick}>
-                {progress.taskStatus === ETaskStatus.NONE && <DownloadIcon />}
-                {[ETaskStatus.IDLE, ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(progress.taskStatus) && (
+            {status === ETaskStatus.BUSY && <StyledSpinner />}
+            {status !== ETaskStatus.BUSY && (
+              <Action status={status} onClick={handleActionClick}>
+                {status === ETaskStatus.NONE && <DownloadIcon />}
+                {[ETaskStatus.IDLE, ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(status) && (
                   <DeleteOutlineIcon />
                 )}
               </Action>

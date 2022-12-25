@@ -2,28 +2,28 @@ import { Box } from '@mui/material';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { IPageShow } from '~shared/.ifaces';
-import { EResource, EShowTypes } from '~shared/.consts';
+import { IPageShowInfo } from '~shared/.ifaces';
+import { EShowTypes } from '~shared/.consts';
 import { Episode } from '~components/episode';
-import { Episodes } from '../../../components/episodes';
-import { IState, useAppDispatch } from '../../../store';
-import { fetchShowAction } from '../../../store/pageSlice';
+import { Episodes } from '~components/episodes';
+import { IState, useAppDispatch } from '~store/index';
+import { fetchShowAction } from '~store/pageSlice';
 import { Loader } from '../../../styles';
 import { Content, Header } from '../../styles';
 import { ImageContainer, ShowContent, ShowData, ShowDescription, ShowImage, Year } from './styles';
 
 export const ShowPage: React.FC = () => {
-  const { resource = EResource.IMDB, resourceShowId = '' } = useParams();
+  const { id } = useParams();
 
   const dispatch = useAppDispatch();
   const { isLoading, data } = useSelector((state: IState) => state.page);
-  const show = data as IPageShow;
+  const show = data as IPageShowInfo;
 
   useEffect(() => {
-    if (resource && resourceShowId) {
-      dispatch(fetchShowAction({ resource, resourceShowId }));
+    if (id) {
+      dispatch(fetchShowAction({ id }));
     }
-  }, [resource, resourceShowId]);
+  }, [id]);
 
   return (
     <Content>
@@ -43,18 +43,8 @@ export const ShowPage: React.FC = () => {
           </ShowContent>
           <ShowData></ShowData>
           <Box pt="20px">
-            {show?.type === EShowTypes.MOVIE && (
-              <Episode resource={show.resource ?? EResource.IMDB} title="" type={EShowTypes.MOVIE} />
-            )}
-            {show?.type === EShowTypes.TVSHOW && (
-              <Episodes
-                seasons={show.seasons}
-                episodes={show.episodes}
-                resource={show.resource}
-                allowDownload={show.resource !== EResource.IMDB}
-                resourceShowId={show.resourceShowId}
-              />
-            )}
+            {show?.type === EShowTypes.MOVIE && <Episode id={0} title="" subtitle="" isDownloadable />}
+            {show?.type === EShowTypes.TVSHOW && <Episodes episodes={show.episodes} />}
           </Box>
         </>
       )}

@@ -1,28 +1,26 @@
 import { Box, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EResource, EShowTypes, getFullEpisodeId } from '~shared/.consts';
+import { EResource, getFullEpisodeId } from '~shared/.consts';
 import { IEpisode } from '~shared/.ifaces';
 import { Episode } from '../episode';
 import { getEpisodeGroups, getHashParams, groupSeasons, NUMBER_EPISODES_IN_LIST } from './utils';
 import { Container, EpisodeGroup, EpisodeGroups, SeasonButton } from './styles';
 
 export interface IEpisodesProps {
-  seasons?: number[];
   episodes?: IEpisode[];
-  allowDownload?: boolean;
-  resource: EResource;
-  resourceShowId: string;
 }
 
-export const Episodes: React.FC<IEpisodesProps> = ({
-  resource,
-  seasons = [],
-  episodes = [],
-  allowDownload = false,
-  resourceShowId,
-}) => {
+export const Episodes: React.FC<IEpisodesProps> = ({ episodes = [] }) => {
   const navigate = useNavigate();
+  const seasons = useMemo(() => {
+    const seasonsObject: Record<string, number> = {};
+    if (episodes) {
+      episodes.forEach((episode) => (seasonsObject[episode.season] = episode.season));
+    }
+    return Object.values(seasonsObject);
+  }, [episodes]);
+
   const { hash = '#' } = useLocation();
   const { season: urlSeason = seasons[0] ?? 1, episodeGroup: urlEpisodeGroup = 0 } = getHashParams(hash);
 
@@ -91,15 +89,12 @@ export const Episodes: React.FC<IEpisodesProps> = ({
       )}
       {episodesInGroup.map((episode) => (
         <Episode
-          key={episode.resourceEpisodeId}
-          hash={episode.hash}
-          title={episode.title ? episode.title : `Episode ${episode.episode}`}
+          key={episode.id}
+          id={episode.id}
+          title={episode.title ?? `Episode ${episode.episode}`}
           subtitle={getFullEpisodeId(episode.season, episode.episode)}
-          resource={resource}
-          resourceShowId={resourceShowId}
-          resourceEpisodeId={episode.resourceEpisodeId}
-          type={EShowTypes.TVSHOW}
-          isDownloadable={allowDownload}
+          resources={episode.resources}
+          isDownloadable={episode.resources.includes(EResource.ORORO) || episode.resources.includes(EResource.AC)}
         />
       ))}
     </Container>

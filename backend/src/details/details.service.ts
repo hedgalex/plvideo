@@ -2,21 +2,29 @@ import axios from 'axios';
 import parse from 'node-html-parser';
 import { Injectable } from '@nestjs/common';
 import { configService } from '~config/config.service';
-import { IEpisode, IPageDetails } from '~shared/.ifaces';
+import { IPageShowInfo } from '~shared/.ifaces';
 import { EResource, EShowTypes } from '~shared/.consts';
-import { hashCode } from '../utils/hash';
+import { hashEpisodeId, hashShowId } from '../utils/hash';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shows } from '../entities/shows';
 import { Repository } from 'typeorm';
+import { Episodes } from '../entities/episodes';
+import { IDetails } from './.ifaces/IDetails';
+import { IDetailsEpisode } from './.ifaces/IDetailsEpisode';
+
+const DAY = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class DetailsService {
   private readonly ororoHeaders: Record<string, string>;
   private readonly animecultHeaders: Record<string, string>;
+  private readonly imdbHeaders: Record<string, string>;
 
   constructor(
     @InjectRepository(Shows)
     private showsRepository: Repository<Shows>,
+    @InjectRepository(Episodes)
+    private episodesRepository: Repository<Episodes>,
   ) {
     this.ororoHeaders = {
       Cookie: configService.getOroroCookies(),
@@ -27,26 +35,86 @@ export class DetailsService {
       Cookie: configService.getAnimecultCookies(),
       'accept-encoding': '',
     };
-  }
-
-  async getDetailsImdb(resourceShowId: string): Promise<IPageDetails> {
-    // const response = await axios(`https://v3.sg.media-imdb.com/suggestion/x/${text}.json`);
-    // const items = response?.data?.d?.filter((item: IImdbSearchItem) => item.qid === 'movie' || item.qid === 'tvSeries');
-
-    return {
-      title: '',
-      image: '',
-      episodes: [],
-      seasons: [],
-      resourceShowId,
-      resource: EResource.AC,
-      type: EShowTypes.TVSHOW,
-      description: '',
-      year: 2000,
+    this.imdbHeaders = {
+      'user-agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+      'accept-encoding': '',
     };
   }
 
-  async getDetailsAnimeCult(resourceShowId: string): Promise<IPageDetails> {
+  async getDetailsImdb(resourceShowId: string): Promise<IDetails> {
+    const { data } = await axios(`https://www.imdb.com/title/${resourceShowId}/`, {
+      headers: this.imdbHeaders,
+    });
+
+    const root = parse(data ?? '');
+
+    const t = JSON.parse(root.querySelector('#__NEXT_DATA__')?.text ?? '{}');
+    const showData = t?.props?.pageProps?.aboveTheFoldData ?? {};
+
+    const title = showData.titleText?.text ?? '';
+    const type = showData.titleType?.id === 'tvSeries' ? EShowTypes.TVSHOW : EShowTypes.MOVIE;
+    const year = showData.releaseYear?.year;
+    const image = showData.primaryImage?.url;
+    const showId = hashShowId(title, year);
+    const description = showData.plot?.plotText?.plainText ?? '';
+    const ratingImdb = showData.ratingsSummary?.aggregateRating ?? 0;
+    const votedImdb = showData.ratingsSummary?.voteCount ?? 0;
+    const currentRank = showData.meterRanking?.currentRank ?? 0;
+    const rankIncline =
+      showData.meterRanking?.rankChange?.difference *
+      (showData.meterRanking?.rankChange?.changeDirection === 'DOWN' ? -1 : 1);
+
+    const episodes = [] as IDetailsEpisode[];
+
+    if (type === EShowTypes.TVSHOW) {
+      for await (const season of t?.props?.pageProps?.mainColumnData?.episodes?.seasons ?? []) {
+        const { data: seasonData } = await axios(
+          `https://www.imdb.com/title/${resourceShowId}/episodes/_ajax?season=${season.number ?? 1}`,
+        );
+
+        const episodesData = parse(seasonData ?? '');
+
+        episodesData.querySelectorAll('div.list_item')?.forEach((episodeItem) => {
+          const link = episodeItem.querySelector('.image a');
+          const episodeTitle = link.getAttribute('title');
+          const divElement = link.querySelector('div');
+          const imdbCode = divElement.getAttribute('data-const');
+          const episode = parseInt(divElement.querySelector('div')?.text?.replace(/S\d+?,.Ep(\d+?)/g, '$1') ?? '0');
+          const seasonNumber = parseInt(season.number, 10);
+          const release = new Date(episodeItem.querySelector('.airdate')?.text).getTime();
+
+          episodes.push({
+            id: hashEpisodeId(title, year, seasonNumber, episode),
+            title: episodeTitle,
+            showId,
+            episode,
+            season: seasonNumber,
+            imdb: imdbCode,
+            release,
+          });
+        });
+      }
+    }
+
+    return {
+      id: showId,
+      title,
+      image,
+      imdb: resourceShowId,
+      episodes,
+      resource: EResource.IMDB,
+      type,
+      description,
+      year,
+      popularity: currentRank,
+      popularityIncline: rankIncline,
+      votedImdb,
+      ratingImdb,
+    };
+  }
+
+  async getDetailsAnimeCult(resourceShowId: string): Promise<IDetails> {
     const domain = 'https://z.animecult.org';
     const response = await axios(`${domain}/serial/${resourceShowId}`, {
       headers: this.animecultHeaders,
@@ -54,7 +122,7 @@ export class DetailsService {
 
     const root = parse(response?.data ?? '');
 
-    const title = root.querySelector('h1')?.text ?? '';
+    const title = root.querySelector('meta[itemprop=name]')?.getAttribute('content') ?? '';
     const image = root.querySelector('.carousel-item img')?.getAttribute('src');
     const items = root.querySelectorAll('a.chapters-item');
     const details = root.querySelectorAll('.serial-info-row');
@@ -65,43 +133,46 @@ export class DetailsService {
     const type = typeDetails?.querySelector('.badge-success')?.getAttribute('href')?.includes('tv_series')
       ? EShowTypes.TVSHOW
       : EShowTypes.MOVIE;
+    const showId = hashShowId(title, year);
 
-    const episodes = [] as IEpisode[];
+    const episodes = [] as IDetailsEpisode[];
     items?.forEach((item) => {
       if (item.getAttribute('href') === '#') {
         return;
       }
 
-      const title = item.querySelector('.chapters-title').text;
-      const episode = item.querySelector('.chapters-number')?.text?.replace(/\D/g, '') ?? '0';
+      const episodeTitle = item.querySelector('.chapters-title').text;
+      const episodeString = item.querySelector('.chapters-number')?.text?.replace(/\D/g, '') ?? '0';
+      const episode = parseInt(episodeString, 10);
 
       episodes.push({
-        hash: hashCode(`${episode}-${EResource.AC}-${resourceShowId}`),
+        id: hashEpisodeId(title, year, 1, episode),
+        showId,
+        episode,
         season: 1,
-        title,
-        episode: parseInt(episode, 10),
-        resourceEpisodeId: episode,
+        title: episodeTitle,
+        ac: episodeString,
       });
     });
 
     episodes.reverse();
 
     return {
-      title: title?.replace(/^\s|\s$/g, ''),
+      id: showId,
+      title: title,
       episodes,
-      seasons: [1],
-      resourceShowId,
       resource: EResource.AC,
       image: `${domain}${image}`,
       type,
-      description,
+      description: description.trim(),
       year,
+      ac: resourceShowId,
     };
   }
 
-  async getDetailsOroro(resourceShowId: string): Promise<IPageDetails> {
+  async getDetailsOroro(resourceShowId: string): Promise<IDetails> {
     const ororoId = resourceShowId.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
-    const response = await axios(`https://ororo.tv/en/${ororoId}`, {
+    const response = await axios(`https://ororo.tv/en${ororoId}`, {
       headers: this.ororoHeaders,
     });
 
@@ -111,40 +182,161 @@ export class DetailsService {
     const year = parseInt(root.querySelector('#year')?.text.replace(/\D*/g, '') ?? '0', 10);
     const image = root.querySelector('#poster')?.getAttribute('src') ?? '';
     const type = ororoId?.startsWith('/shows') ? EShowTypes.TVSHOW : EShowTypes.MOVIE;
-
-    const seasons = root
-      .querySelectorAll('.js-season-link')
-      ?.map((season) => parseInt(season?.text.replace(/\D*/g, '') ?? '0', 10));
-    const episodes = root.querySelectorAll('.episode-box')?.map((episodeElement) => {
-      const link = episodeElement.querySelector('.show-content__episode-link');
-      const title = link?.text.trim() ?? '';
-      const [season = '0', episode = '0'] = link?.getAttribute('href')?.replace(/#/, '').split('-');
-      const resourceEpisodeId = link?.getAttribute('data-id');
-
-      return {
-        title,
-        episode: parseInt(episode, 10),
-        season: parseInt(season, 10),
-        hash: hashCode(`${resourceEpisodeId}-${EResource.ORORO}-${resourceShowId}`),
-        resourceEpisodeId,
-      };
-    });
+    const showId = hashShowId(title, year);
+    const episodes =
+      root.querySelectorAll('.episode-box')?.map((episodeElement) => {
+        const link = episodeElement.querySelector('.show-content__episode-link');
+        const episodeTitle = link?.text.trim() ?? '';
+        const [seasonString = '0', episodeString = '0'] = link?.getAttribute('href')?.replace(/#/, '').split('-');
+        const resourceEpisodeId = link?.getAttribute('data-id');
+        const season = parseInt(seasonString, 10);
+        const episode = parseInt(episodeString, 10);
+        return {
+          id: hashEpisodeId(title, year, season, episode),
+          title: episodeTitle,
+          episode,
+          season,
+          showId,
+          ororo: resourceEpisodeId,
+          release: 0,
+        } as IDetailsEpisode;
+      }) ?? [];
 
     return {
+      id: showId,
       title,
       image,
       episodes,
-      seasons,
-      resourceShowId,
       resource: EResource.ORORO,
       type,
       description,
       year,
+      ororo: resourceShowId,
     };
   }
 
-  async getDetails(showId: number): Promise<IPageDetails> {
-    this.showsRepository.findOne({ where: { id: showId } });
-    return null;
+  async getDetails(showId: number): Promise<IPageShowInfo> {
+    const {
+      ororo: showOroro,
+      imdb: showImdb,
+      ac: showAc,
+      ...show
+    } = await this.showsRepository.findOne({
+      where: { id: showId },
+      relations: {
+        episodes: true,
+      },
+      order: {
+        episodes: {
+          episode: 'ASC',
+        },
+      },
+    });
+
+    return {
+      ...show,
+      resources: [showOroro && EResource.ORORO, showAc && EResource.AC, showImdb && EResource.IMDB].filter(
+        (item) => item,
+      ),
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      episodes: show.episodes.map(({ ororo, imdb, ac, showId: _showId, ...episode }) => ({
+        ...episode,
+        resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
+      })),
+    };
+  }
+
+  private async fetchDetails(resource: EResource, resourceShowId: string) {
+    switch (resource) {
+      case EResource.ORORO: {
+        return await this.getDetailsOroro(resourceShowId);
+      }
+      case EResource.AC: {
+        return await this.getDetailsAnimeCult(resourceShowId);
+      }
+      case EResource.IMDB:
+      default: {
+        return await this.getDetailsImdb(resourceShowId);
+      }
+    }
+  }
+
+  async addDetails(resource: EResource, resourceShowId: string, showId: number, force = false): Promise<void> {
+    const show = await this.showsRepository.findOne({ where: { id: showId } });
+    const time = new Date().getTime();
+
+    if (time < show?.sync + DAY && !force && show?.[resource] !== null) {
+      return;
+    }
+
+    const details = await this.fetchDetails(resource, resourceShowId);
+    if (!show) {
+      this.showsRepository.insert({
+        id: details.id,
+        title: details.title,
+        image: details.image,
+        description: details.description,
+        year: details.year,
+        ororo: details.ororo,
+        ac: details.ac,
+        imdb: details.imdb,
+        sync: time,
+        type: details.type,
+      });
+    } else {
+      this.showsRepository.update(
+        {
+          id: show.id,
+        },
+        {
+          image: details.image,
+          description: details.description,
+          sync: time,
+          ororo: details.ororo ?? show.ororo,
+          ac: details.ac ?? show.ac,
+          imdb: details.imdb ?? show.imdb,
+          ...(details.resource === EResource.IMDB && {
+            popularity: details.popularity,
+            popularityIncline: details.popularityIncline,
+            ratingImdb: details.ratingImdb,
+            votedImdb: details.votedImdb,
+          }),
+        },
+      );
+    }
+
+    if (details.type === EShowTypes.TVSHOW) {
+      const oldEpisodes = await this.episodesRepository.find({ where: { showId } });
+      const newEpisodes = details.episodes.filter(
+        (newEpisode) => !oldEpisodes.find((oldEpisode) => oldEpisode.id === newEpisode.id),
+      );
+
+      if (newEpisodes.length > 0) {
+        await this.episodesRepository.insert(newEpisodes);
+      }
+
+      for await (const oldEpisode of oldEpisodes ?? []) {
+        const detailsEpisode = details.episodes.find((detailsEpisodeItem) => detailsEpisodeItem.id === oldEpisode.id);
+        if (
+          detailsEpisode &&
+          (detailsEpisode.imdb !== oldEpisode.imdb ||
+            detailsEpisode.ac !== oldEpisode.ac ||
+            detailsEpisode.ororo !== oldEpisode.ororo ||
+            detailsEpisode.release !== oldEpisode.release)
+        ) {
+          await this.episodesRepository.update(
+            {
+              id: oldEpisode.id,
+            },
+            {
+              imdb: oldEpisode.imdb ?? detailsEpisode.imdb,
+              ac: oldEpisode.ac ?? detailsEpisode.ac,
+              ororo: oldEpisode.ororo ?? detailsEpisode.ororo,
+              release: (detailsEpisode.release > 0 && detailsEpisode.release) || oldEpisode.release,
+            },
+          );
+        }
+      }
+    }
   }
 }

@@ -19,7 +19,7 @@ export const SearchPage: React.FC = () => {
 
   const hash = decodeURIComponent(location.hash.replace(/#/, ''));
   const [searchText, setSearchText] = useState<string>('');
-  const [activEResource, setActivEResource] = useState<EResource>(EResource.IMDB);
+  const [activeResource, setActivEResource] = useState<EResource>(EResource.IMDB);
 
   const { isLoading, data } = useSelector((state: IState) => state.page);
   const { items = [] } = data as IPageSearchResult;
@@ -27,9 +27,9 @@ export const SearchPage: React.FC = () => {
   useEffect(() => {
     setSearchText(hash);
     if (hash.length > 2) {
-      dispatch(searchAction({ searchText: hash, resource: activEResource }));
+      dispatch(searchAction({ searchText: hash, resource: activeResource }));
     }
-  }, [hash, activEResource]);
+  }, [hash, activeResource]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     navigator(`#${encodeURIComponent(event?.target?.value)}` ?? '');
@@ -50,21 +50,21 @@ export const SearchPage: React.FC = () => {
         </Box>
         <Stack direction="row" spacing="5px" mt="8px">
           <StyledChip
-            isSelected={activEResource === EResource.IMDB}
+            isSelected={activeResource === EResource.IMDB}
             className="chip-label"
             size="small"
             label="IMDB"
             onClick={handleChipClick(EResource.IMDB)}
           />
           <StyledChip
-            isSelected={activEResource === EResource.ORORO}
+            isSelected={activeResource === EResource.ORORO}
             className="chip-label"
             size="small"
             label="ORORO"
             onClick={handleChipClick(EResource.ORORO)}
           />
           <StyledChip
-            isSelected={activEResource === EResource.AC}
+            isSelected={activeResource === EResource.AC}
             className="chip-label"
             size="small"
             label="AC"
@@ -75,7 +75,15 @@ export const SearchPage: React.FC = () => {
       {isLoading && <Loader />}
       {!isLoading &&
         items.map((item) => (
-          <Episode key={item.resourceShowId} {...item} subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'} />
+          <Episode
+            id={item.showId}
+            key={item.resourceShowId}
+            title={item.title}
+            subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'}
+            imagePreview={item.imagePreview}
+            resources={[activeResource]}
+            resourceShowId={item.resourceShowId}
+          />
         ))}
     </Content>
   );

@@ -19,12 +19,11 @@ export const Downloads: React.FC = () => {
           {data.map((task: ITask) => (
             <Episode
               key={task.id}
-              hash={task.hash}
+              id={task.id}
               title={task.title}
               subtitle={task.subtitle}
-              isDownloadable
-              // link={`/show/${task.resource}/${task.resourceShowId}`}
               imagePreview={task.image}
+              isDownloadable
             />
           ))}
         </>

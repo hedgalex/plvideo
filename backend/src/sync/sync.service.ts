@@ -24,7 +24,6 @@ export class SyncService {
         await this.showsRepository.update(
           { id: existTvShow.id },
           {
-            imdbId: show.imdbId,
             popularity: show.popularity,
             popularityIncline: show.popularityIncline,
             ratingImdb: show.ratingImdb,
@@ -34,7 +33,6 @@ export class SyncService {
       } else {
         await this.showsRepository.insert({
           id: show.id,
-          imdbId: show.imdbId,
           image: show.imagePreview,
           year: show.year,
           title: show.title,

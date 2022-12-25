@@ -23,10 +23,20 @@ export const searchAction = createAsyncThunk(
   },
 );
 
-export const fetchShowAction = createAsyncThunk(
+export const fetchShowAction = createAsyncThunk('show/fetch', async ({ id }: { id: number | string }) => {
+  const { data } = await axios.get('/api/details', { params: { id } });
+  return data;
+});
+
+export const addShowAction = createAsyncThunk(
   'show/fetch',
-  async ({ resource, resourceShowId }: { resource: string; resourceShowId: string }) => {
-    const { data } = await axios.get(`/api/details`, { params: { resource, resourceShowId } });
+  async ({ resource, resourceShowId, showId }: { resource: string; resourceShowId: string; showId: number }) => {
+    const { data } = await axios.post('/api/details', {
+      resource,
+      resourceShowId,
+      showId: showId?.toString() ?? '0',
+    });
+
     return data;
   },
 );

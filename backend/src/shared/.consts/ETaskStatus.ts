@@ -3,7 +3,7 @@ export enum ETaskStatus {
 	IDLE = 'IDLE',
 	IN_PROGRESS = 'IN_PROGRESS',
 	READY = 'READY',
-	LOADING = 'LOADING',
+	BUSY = 'BUSY',
 }
 
 export const taskStatusEnum = {

@@ -1,7 +1,10 @@
+import { EResource } from '../.consts';
+
 export interface IEpisode {
-	season: number;
+	id: number;
 	title: string;
+	season: number;
 	episode: number;
-	hash: number;
-	resourceEpisodeId: string;
+	resources: EResource[];
+	release: number;
 }

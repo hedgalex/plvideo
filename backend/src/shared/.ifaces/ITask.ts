@@ -6,7 +6,6 @@ export interface ITask {
 	title: string;
 	subtitle: string;
 	image: string;
-	hash: number;
 	started: number;
 	finished: number;
 	size: number;
