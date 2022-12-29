@@ -1,36 +1,31 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { EResource, ETaskStatus } from '~shared/.consts';
+import { Box as RatingBlock } from '@mui/material';
 import { useProgress } from '~app/hooks/useProgress';
+import { EResource } from '~shared/.consts';
 import { useAppDispatch } from '~store/index';
 import { addShowAction } from '~store/pageSlice';
-import { getSizeTitle } from './utils';
-import {
-  Action,
-  Details,
-  Download,
-  Info,
-  EpisodeItem,
-  ItemImage,
-  Title,
-  Progress,
-  Subtitle,
-  ProgressInfo,
-  Size,
-  StyledSpinner,
-} from './styles';
+import { Progress } from './blocks/Progress';
+import { Rating } from './blocks/Rating';
+import { Size } from './blocks/Size';
+import { DownloadAction } from './blocks/DownloadAction';
+import { Popularity } from './blocks/Popularity';
+import { Info, EpisodeItem, ItemImage, Title, Subtitle, NamesBlock, StatisticsBlock } from './styles';
+import { Loader } from '../../styles';
 
 export interface IEpisodeProps {
   id?: number;
   title?: string;
-  subtitle?: string;
+  subtitle?: string | number;
   resources?: EResource[];
   resourceShowId?: string;
   resourceEpisodeId?: string;
-  imagePreview?: string;
+  image?: string;
   isDownloadable?: boolean;
+  popularity?: number;
+  popularityIncline?: number;
+  ratingImdb?: number;
+  votedImdb?: number;
 }
 
 export const Episode: React.FC<IEpisodeProps> = ({
@@ -39,11 +34,16 @@ export const Episode: React.FC<IEpisodeProps> = ({
   subtitle = '',
   resources = [],
   resourceShowId = '',
-  imagePreview,
+  image,
   isDownloadable = false,
+  popularity,
+  popularityIncline,
+  ratingImdb,
+  votedImdb,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [showRequested, setShowRequested] = useState<boolean>(false);
   const { status, changeStatus, size, downloaded } = useProgress(id, {
     enabled: !!id && isDownloadable,
   });
@@ -54,40 +54,35 @@ export const Episode: React.FC<IEpisodeProps> = ({
   }, [status, resources]);
 
   const navigateToShowsPage = async () => {
-    await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId: id }));
+    //TODO Block other records. Set current one
+    setShowRequested(true);
+    if (resourceShowId) {
+      await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId: id }));
+    }
     navigate(`/show/${id}`);
   };
 
+  if (showRequested) {
+    return <Loader />;
+  }
+
   return (
     <EpisodeItem>
-      {imagePreview && <ItemImage src={imagePreview} />}
+      {image && <ItemImage src={image} />}
       <Info>
-        <Progress>
-          {status !== ETaskStatus.NONE && (
-            <>
-              <ProgressInfo>{downloaded}%</ProgressInfo>
-              <Download completed={downloaded} />
-            </>
-          )}
-        </Progress>
-        <Details onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!imagePreview}>
+        <StatisticsBlock>
+          <Progress status={status} downloaded={downloaded} />
+          <Popularity value={popularity} incline={popularityIncline} />
+        </StatisticsBlock>
+        <NamesBlock onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!image}>
           <Title>{title}</Title>
           <Subtitle>{subtitle}</Subtitle>
-        </Details>
-        {size > 0 && <Size>{getSizeTitle(size)}</Size>}
-        {isDownloadable && (
-          <>
-            {status === ETaskStatus.BUSY && <StyledSpinner />}
-            {status !== ETaskStatus.BUSY && (
-              <Action status={status} onClick={handleActionClick}>
-                {status === ETaskStatus.NONE && <DownloadIcon />}
-                {[ETaskStatus.IDLE, ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(status) && (
-                  <DeleteOutlineIcon />
-                )}
-              </Action>
-            )}
-          </>
-        )}
+        </NamesBlock>
+        <RatingBlock>
+          <Size value={size} />
+          <Rating value={ratingImdb} voted={votedImdb} />
+        </RatingBlock>
+        {isDownloadable && <DownloadAction status={status} onClick={handleActionClick} />}
       </Info>
     </EpisodeItem>
   );

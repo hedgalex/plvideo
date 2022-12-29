@@ -1,7 +1,7 @@
 import { Controller, Get, ParseEnumPipe, Query } from '@nestjs/common';
 import { SearchService } from './search.service';
-import { IPageSearchResult } from '~shared/.ifaces';
 import { EResource } from '~shared/.consts';
+import { IPageListResult, IShowItem } from '~shared/.ifaces';
 
 @Controller('/api/search')
 export class SearchController {
@@ -11,7 +11,7 @@ export class SearchController {
   async searchImdb(
     @Query('searchText') text: string,
     @Query('resource', new ParseEnumPipe(EResource)) resource: EResource,
-  ): Promise<IPageSearchResult> {
+  ): Promise<IPageListResult<IShowItem>> {
     switch (resource) {
       case EResource.IMDB: {
         const items = await this.searchService.searchImdb(text);

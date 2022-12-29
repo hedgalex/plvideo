@@ -47,30 +47,41 @@ export const HighlightPurple = styled.div`
     `radial-gradient(circle, ${theme?.colors.bg.melrose} 0%, ${theme?.colors.bg.melrose} 50%, transparent 51%, transparent 100%)`};
 `;
 
-export const Loader = styled.div`
-  animation-duration: 3s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-name: placeHolderShimmer;
-  animation-timing-function: linear;
-  background-color: #fff;
-  margin-bottom: 25px;
-  background: linear-gradient(
-    45deg,
-    #ffffff 10%,
-    #eeeeee 15%,
-    #ffffff 20%,
-    #ffffff 40%,
-    #eeeeee 45%,
-    #ffffff 50%,
-    #ffffff 70%,
-    #eeeeee 75%,
-    #ffffff 80%
-  );
-  background-size: 800px 104px;
+interface ILoading {
+  loading?: boolean;
+}
+
+export const ProgressLoader = styled.div<ILoading>`
+  ${({ loading = false }) =>
+    loading &&
+    `
+    background: linear-gradient(
+      30deg,
+      #ffffff 10%,
+      #eeeeee 15%,
+      #ffffff 20%,
+      #ffffff 40%,
+      #eeeeee 45%,
+      #ffffff 50%,
+      #ffffff 70%,
+      #eeeeee 75%,
+      #ffffff 80%
+    );
+    color: transparent;
+    animation-duration: 4s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: placeHolderShimmer;
+    animation-timing-function: linear;
+    background-color: #fff;
+    background-size: 800px 300px;
+  `}
+`;
+
+export const Loader = styled(ProgressLoader)`
+  position: relative;
   height: 60px;
   border-radius: 16px;
-  position: relative;
 `;
 
 export const Spinner = styled.div<{

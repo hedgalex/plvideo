@@ -8,6 +8,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { SearchModule } from './search/search.module';
 import { SyncModule } from './sync/sync.module';
 import { DetailsModule } from './details/details.module';
+import { ShowsModule } from './shows/shows.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DetailsModule } from './details/details.module';
     }),
     SearchModule,
     DetailsModule,
+    ShowsModule,
   ],
 })
 export class AppModule {}

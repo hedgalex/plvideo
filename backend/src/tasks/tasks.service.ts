@@ -108,7 +108,7 @@ export class TasksService {
         id: task.id,
         title: task.episode?.title,
         subtitle: getFullEpisodeId(task.episode?.season ?? 0, task.episode.episode ?? 0),
-        image: task.episode?.show.image,
+        image: task.episode?.show?.image ?? '',
         started: task.started,
         finished: task.finished,
         size: task.size,
@@ -143,9 +143,8 @@ export class TasksService {
 
     const { show } = episode;
     const ororoId = show.ororo.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
-    const downloadUrl = `${ORORO_URL}${ororoId}/videos/${episode.ororo}/download`;
     if (show.type === EShowTypes.TVSHOW) {
-      console.info('down', downloadUrl);
+      const downloadUrl = `${ORORO_URL}${ororoId}/videos/${episode.ororo}/download`;
       this.tasksRepository.insert({
         id: episode.id,
         path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
@@ -153,6 +152,7 @@ export class TasksService {
         downloadResourceId: 1,
       });
     } else {
+      const downloadUrl = `https://ororo.tv/en${ororoId}/download`;
       this.tasksRepository.insert({
         id: episode.id,
         path: getMovieFilePath(show.title, show.year, 'mp4'),

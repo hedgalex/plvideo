@@ -10,7 +10,7 @@ import { Loader } from '~app/styles';
 import { Content, Header } from '~app/content/styles';
 import { SearchContainer, StyledChip } from './styles';
 import { EResource, EShowTypes } from '~shared/.consts';
-import { IPageSearchResult } from '~shared/.ifaces';
+import { IPageListResult, IShowItem } from '~shared/.ifaces';
 
 export const SearchPage: React.FC = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ export const SearchPage: React.FC = () => {
   const [activeResource, setActivEResource] = useState<EResource>(EResource.IMDB);
 
   const { isLoading, data } = useSelector((state: IState) => state.page);
-  const { items = [] } = data as IPageSearchResult;
+  const { items = [] } = data as IPageListResult<IShowItem>;
 
   useEffect(() => {
     setSearchText(hash);
@@ -41,7 +41,7 @@ export const SearchPage: React.FC = () => {
 
   return (
     <Content>
-      <Header variant="h1" fontSize="32px">
+      <Header variant="h1" pb="72px">
         Search
       </Header>
       <SearchContainer>
@@ -76,11 +76,11 @@ export const SearchPage: React.FC = () => {
       {!isLoading &&
         items.map((item) => (
           <Episode
-            id={item.showId}
+            id={item.id}
             key={item.resourceShowId}
             title={item.title}
             subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'}
-            imagePreview={item.imagePreview}
+            image={item.image}
             resources={[activeResource]}
             resourceShowId={item.resourceShowId}
           />

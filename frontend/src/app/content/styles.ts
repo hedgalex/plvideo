@@ -60,5 +60,13 @@ export const Content = styled.div`
 `;
 
 export const Header = styled(Typography)`
-  padding: 20px 0 75px 0;
+  padding-top: 20px;
+
+  &.MuiTypography-h1 {
+    font-size: 32px;
+  }
+`;
+
+export const PageContent = styled.div`
+  padding-top: 75px;
 `;

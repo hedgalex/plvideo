@@ -1,13 +1,17 @@
 import  { EResource, EShowTypes } from '~shared/.consts';
 
 export interface IShowItem {
-  showId: number;
-  resource: EResource;
-  resourceShowId?: string;
-  resourceEpisodeId?: string;
+  id: number;
+  resources: EResource[];
   title: string;
   type?: EShowTypes;
-  imagePreview?: string;
+  image?: string;
   year?: number;
   episodes?: number;
+  resourceShowId?: string;
+  resourceEpisodeId?: string;
+  popularity?: number;
+  popularityIncline?: number;
+  ratingImdb?: number;
+  votedImdb?: number;
 }

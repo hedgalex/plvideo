@@ -6,7 +6,8 @@ import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import HistoryIcon from '@mui/icons-material/History';
-import { TVShowsPage } from './pages/TVShows';
+import { EShowTypes } from '~shared/.consts';
+import { ListPage } from './pages/List';
 import { SearchPage } from './pages/Search';
 import { ShowPage } from './pages/Show';
 import { Downloads } from './pages/Downloads';
@@ -37,9 +38,9 @@ export const Routes: React.FC = () => (
       </NavItem>
     </Nav>
     <RouterRoutes>
-      <Route path="/" element={<TVShowsPage />} />
-      <Route path="/tvshows" element={<TVShowsPage />} />
-      <Route path="/movies" element={<TVShowsPage />} />
+      <Route path="/" element={<ListPage type={EShowTypes.TVSHOW} />} />
+      <Route path="/tvshows" element={<ListPage type={EShowTypes.TVSHOW} />} />
+      <Route path="/movies" element={<ListPage type={EShowTypes.MOVIE} />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/show/:id" element={<ShowPage />} />
       <Route path="/downloads" element={<Downloads />} />

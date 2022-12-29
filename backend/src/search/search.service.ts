@@ -31,10 +31,10 @@ export class SearchService {
     return items?.map((item: IImdbSearchItem): IShowItem => {
       const title = item?.l ?? '';
       return {
-        resource: EResource.IMDB,
+        resources: [EResource.IMDB],
         title,
-        showId: hashShowId(title, item.y),
-        imagePreview: item?.i?.imageUrl,
+        id: hashShowId(title, item.y),
+        image: item?.i?.imageUrl,
         type: item.qid === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
         year: item.y,
         resourceShowId: item?.id,
@@ -62,19 +62,19 @@ export class SearchService {
 
         const details = content.pop()?.split(/\|/) ?? [];
         const episodes = parseInt(details[0]?.replace(/\D*/g, '') ?? '0', 10);
-        const imagePreview = `${domain}${item.querySelector('.anime-img')?.getAttribute('src')}`;
+        const image = `${domain}${item.querySelector('.anime-img')?.getAttribute('src')}`;
         const resourceShowId = link.replace(/\/(.*?)\/(.*?)/, '$2');
         const year = parseInt(details[1]?.replace(/\D*/g, '') ?? '0', 10);
 
         return {
           resourceShowId,
-          showId: hashShowId(title, year),
-          resource: EResource.AC,
+          id: hashShowId(title, year),
+          resources: [EResource.AC],
           title,
           year,
           episodes,
           type: EShowTypes.TVSHOW,
-          imagePreview,
+          image,
         } as IShowItem;
       }) ?? [];
 
@@ -97,7 +97,7 @@ export class SearchService {
         const details = (p?.[1]?.text ?? '').split(/,/);
         const year = parseInt(details?.[1]?.trim() ?? '0', 10);
         const type = details?.[0]?.replace(/\s*/, '').toLowerCase() ?? '';
-        const imagePreview = item.querySelector('.search-results-item-image img')?.getAttribute('src');
+        const image = item.querySelector('.search-results-item-image img')?.getAttribute('src');
         if (type !== 'tv show' && type !== 'movie') {
           return null;
         }
@@ -105,13 +105,13 @@ export class SearchService {
         const resourceShowId = link;
 
         return {
-          imagePreview,
-          resourceShowId: resourceShowId.substring(1).replace(/\//, '-'),
-          showId: hashShowId(title, year),
-          resource: EResource.ORORO,
+          id: hashShowId(title, year),
           title,
-          type: type === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
+          image,
           year,
+          resourceShowId: resourceShowId.substring(1).replace(/\//, '-'),
+          resources: [EResource.ORORO],
+          type: type === 'movie' ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
         } as IShowItem;
       }) ?? [];
 

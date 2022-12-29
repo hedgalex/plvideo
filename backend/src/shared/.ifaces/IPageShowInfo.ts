@@ -10,8 +10,9 @@ export interface IPageShowInfo {
 	type: EShowTypes;
 	description: string;
 	year: number;
-	popularity?: number,
-	popularityIncline?: number,
-	ratingImdb?: number,
-	votedImdb?: number,
+	popularity?: number;
+	popularityIncline?: number;
+	ratingImdb?: number;
+	votedImdb?: number;
+	sync?: number;
 }

@@ -9,6 +9,7 @@ export interface IColors {
   secondary: string;
   alert: string;
   bg: Record<'catskillWhite' | 'athensGray' | 'watusi' | 'melrose' | 'inactive', string>;
+  border: Record<'santasGray', string>;
   fonts: unknown;
 }
 
@@ -33,6 +34,9 @@ export const theme = {
       watusi: '#FFD6CE',
       melrose: '#C7BAFF',
       inactive: '#CCCCCC',
+    },
+    border: {
+      santasGray: '#A0A2AF',
     },
     fonts: {
       boulder: '#7B7B7B',

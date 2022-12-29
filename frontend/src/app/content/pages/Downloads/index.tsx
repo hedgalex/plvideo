@@ -13,7 +13,7 @@ export const Downloads: React.FC = () => {
       {!isLoaded && <Loader />}
       {isLoaded && (
         <>
-          <Header variant="h1" fontSize="32px">
+          <Header variant="h1" pb="72px">
             Downloads
           </Header>
           {data.map((task: ITask) => (
@@ -22,7 +22,7 @@ export const Downloads: React.FC = () => {
               id={task.id}
               title={task.title}
               subtitle={task.subtitle}
-              imagePreview={task.image}
+              image={task.image}
               isDownloadable
             />
           ))}

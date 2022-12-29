@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { IPageContent } from '~shared/.ifaces';
-import { EResource } from '~shared/.consts';
+import { IPageContent, IPageShowInfo } from '~shared/.ifaces';
+import { EResource, EShowTypes } from '~shared/.consts';
 import { searchResult } from './mocks/shows';
 import { rickAndMortyShow } from './mocks/ororo-rick-and-morty';
+import { tvShowsList } from './mocks/tvlist';
 
 export interface IPage {
   data: IPageContent;
@@ -23,18 +24,47 @@ export const searchAction = createAsyncThunk(
   },
 );
 
+export const readTopAction = createAsyncThunk(
+  'list/fetch',
+  async ({ type, page }: { type: EShowTypes; page?: number }) => {
+    const { data } = await axios.get(`/api/list`, { params: { type, page } });
+    return data;
+  },
+);
+
 export const fetchShowAction = createAsyncThunk('show/fetch', async ({ id }: { id: number | string }) => {
   const { data } = await axios.get('/api/details', { params: { id } });
   return data;
 });
 
+export const saveShowTitleAction = createAsyncThunk(
+  'show/save',
+  async ({ id, title }: { id: number | string; title: string }) => {
+    const { data } = await axios.put('/api/details', { id, title });
+    return data;
+  },
+);
+
 export const addShowAction = createAsyncThunk(
-  'show/fetch',
+  'show/add',
   async ({ resource, resourceShowId, showId }: { resource: string; resourceShowId: string; showId: number }) => {
-    const { data } = await axios.post('/api/details', {
+    const { data } = await axios.post('/api/details/add', {
       resource,
       resourceShowId,
       showId: showId?.toString() ?? '0',
+    });
+
+    return data;
+  },
+);
+
+export const updateShowAction = createAsyncThunk(
+  'show/update',
+  async ({ id, resource, force }: { id: number | string; resource?: string; force?: boolean }) => {
+    const { data } = await axios.post('/api/details/update', {
+      resource,
+      id: id?.toString() ?? '0',
+      force,
     });
 
     return data;
@@ -69,6 +99,26 @@ const pageSlice = createSlice({
         page: 1,
         items: searchResult,
       };
+      state.isLoading = false;
+    });
+    builder.addCase(saveShowTitleAction.fulfilled, (state: IPage, { payload }) => {
+      (state.data as IPageShowInfo).title = payload;
+    });
+    builder.addCase(readTopAction.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+    });
+    builder.addCase(readTopAction.rejected, (state: IPage) => {
+      state.data = tvShowsList;
+    });
+    builder.addCase(updateShowAction.pending, (state: IPage) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateShowAction.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+      state.isLoading = false;
+    });
+    builder.addCase(updateShowAction.rejected, (state: IPage, { payload }) => {
+      console.error('Error', payload);
       state.isLoading = false;
     });
   },

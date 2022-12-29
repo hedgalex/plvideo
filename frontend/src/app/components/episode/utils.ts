@@ -8,5 +8,5 @@ export const getSizeTitle = (size: number): string => {
     _size = _size / 1024;
   }
 
-  return `${Math.floor(_size)}${letters[i]}`;
+  return `${Math.round(_size * 10) / 10}${letters[i]}`;
 };

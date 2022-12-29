@@ -12,7 +12,7 @@ export const rickAndMortyShow = {
   ratingImdb: 9.1,
   votedImdb: 523113,
   type: 1,
-  sync: 1671652752656,
+  sync: 1672254690043,
   episodes: [
     {
       id: 5534520857720412,

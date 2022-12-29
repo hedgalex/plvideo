@@ -28,6 +28,7 @@ export class SyncService {
             popularityIncline: show.popularityIncline,
             ratingImdb: show.ratingImdb,
             votedImdb: show.votedImdb,
+            imdb: show.imdbId,
           },
         );
       } else {
@@ -37,6 +38,7 @@ export class SyncService {
           year: show.year,
           title: show.title,
           type,
+          imdb: show.imdbId,
           popularity: show.popularity,
           popularityIncline: show.popularityIncline,
           ratingImdb: show.ratingImdb,

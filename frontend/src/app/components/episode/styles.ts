@@ -29,19 +29,16 @@ export const Info = styled.div`
   display: flex;
 `;
 
-export const Progress = styled.div`
-  width: 26px;
-  margin-top: 1px;
-  padding-left: 5px;
-  text-align: center;
+export const StatisticsBlock = styled.div`
+  width: 50px;
+  height: 40px;
+  margin-left: -4px;
   cursor: default;
-`;
-
-export const ProgressInfo = styled.span`
-  font-size: 12px;
+  overflow: hidden;
 `;
 
 export const Download = styled.div`
+  display: inline-block;
   width: 26px;
   height: 20px;
   background: ${({ completed }: IGlobalTheme<{ completed: number }>) =>
@@ -54,12 +51,12 @@ interface IDetailsProps {
   hasImage: boolean;
 }
 
-export const Details = styled.div`
-  cursor: ${({ allowClick }: IGlobalTheme<IDetailsProps>) => (!allowClick ? 'default' : 'pointer')};
+export const NamesBlock = styled.div`
   flex-grow: 1;
   font-size: 16px;
-  margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '85px' : '15px')};
   height: 38px;
+  cursor: ${({ allowClick }: IGlobalTheme<IDetailsProps>) => (!allowClick ? 'default' : 'pointer')};
+  margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '73px' : '15px')};
 `;
 
 export const Title = styled.div`
@@ -74,11 +71,6 @@ export const Title = styled.div`
 export const Subtitle = styled.div`
   margin-top: 4px;
   color: black;
-`;
-
-export const Size = styled.div`
-  color: #a0a2af;
-  margin: 10px 10px 0 0;
 `;
 
 export const Action = styled.div`
@@ -104,4 +96,20 @@ export const StyledSpinner = styled(Spinner)`
   margin: 6px 12px 0 0;
   width: 25px;
   height: 25px;
+`;
+
+export const SizeBlock = styled.div`
+  color: #a0a2af;
+  margin: 12px 10px 0 0;
+  font-size: 14px;
+`;
+
+export const RatingIncline = styled.span<{ incline: number }>`
+  color: ${({ incline }) => (incline > 0 ? 'green' : 'red')};
+  padding-top: ${({ incline }) => (incline > 0 ? '2px' : '9px')};
+  text-align: center;
+`;
+
+export const PopularityIndex = styled.span`
+  margin-top: 10px;
 `;
