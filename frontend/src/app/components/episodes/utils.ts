@@ -2,7 +2,7 @@ import { IEpisode } from '~shared/.ifaces';
 
 export const NUMBER_EPISODES_IN_LIST = 50;
 
-interface ISeason {
+export interface ISeason {
   name: string;
   seasonNumber: number;
 }

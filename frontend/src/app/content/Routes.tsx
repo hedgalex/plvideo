@@ -1,6 +1,4 @@
 import { Route, Routes as RouterRoutes } from 'react-router-dom';
-import { Typography } from '@mui/material';
-import { Container, Logo, Nav, NavItem } from './styles';
 import TvIcon from '@mui/icons-material/Tv';
 import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,6 +9,7 @@ import { ListPage } from './pages/List';
 import { SearchPage } from './pages/Search';
 import { ShowPage } from './pages/Show';
 import { Downloads } from './pages/Downloads';
+import { Container, Logo, Nav, NavItem, NavTitle } from './styles';
 
 export const Routes: React.FC = () => (
   <Container>
@@ -18,23 +17,23 @@ export const Routes: React.FC = () => (
       <Logo>PlVideo</Logo>
       <NavItem href="/tvshows">
         <TvIcon className="icon" width="20px" height="20px" />
-        <Typography ml="20px">Top TV Shows</Typography>
+        <NavTitle>Top TV Shows</NavTitle>
       </NavItem>
       <NavItem href="/movies">
         <LocalMoviesIcon className="icon" width="20px" height="20px" />
-        <Typography ml="20px">Top Movies</Typography>
+        <NavTitle>Top Movies</NavTitle>
       </NavItem>
       <NavItem href="/search">
         <SearchIcon className="icon" width="20px" height="20px" />
-        <Typography ml="20px">Search</Typography>
+        <NavTitle>Search</NavTitle>
       </NavItem>
       <NavItem href="/downloads">
         <DownloadIcon className="icon" width="20px" height="20px" />
-        <Typography ml="20px">Downloads</Typography>
+        <NavTitle>Downloads</NavTitle>
       </NavItem>
       <NavItem href="/recent">
         <HistoryIcon className="icon" width="20px" height="20px" />
-        <Typography ml="20px">Recent</Typography>
+        <NavTitle>Recent</NavTitle>
       </NavItem>
     </Nav>
     <RouterRoutes>

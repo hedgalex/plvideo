@@ -5,8 +5,8 @@ import { readTopAction } from '~store/pageSlice';
 import { EShowTypes } from '~shared/.consts';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
 import { Episode } from '~components/episode';
-import { Content, Header } from '../../styles';
-import { ProgressLoader } from '../../../styles';
+import { ProgressLoader } from '~app/styles';
+import { Content, Header } from '~app/content/styles';
 
 interface IListPageProps {
   type: EShowTypes;
@@ -34,9 +34,7 @@ export const ListPage: React.FC<IListPageProps> = ({ type }) => {
 
   return (
     <Content>
-      <Header variant="h1" pb="72px">
-        {headTitle}
-      </Header>
+      <Header variant="h1">{headTitle}</Header>
       <ProgressLoader loading={isLoading}>
         {!isLoading &&
           list?.map((item) => (

@@ -41,9 +41,7 @@ export const SearchPage: React.FC = () => {
 
   return (
     <Content>
-      <Header variant="h1" pb="72px">
-        Search
-      </Header>
+      <Header variant="h1">Search</Header>
       <SearchContainer>
         <Box>
           <Input variant="outlined" size="small" value={searchText} onChange={handleChange} />

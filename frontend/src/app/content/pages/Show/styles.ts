@@ -6,6 +6,11 @@ export const Year = styled(ProgressLoader)`
   font-size: 16px;
   width: 50px;
   min-height: 20px;
+  margin-top: -75px;
+
+  @media only screen and (max-width: 768px) {
+    margin-top: -20px;
+  }
 `;
 
 export const ShowContent = styled.div`
@@ -16,16 +21,31 @@ export const ShowContent = styled.div`
 export const ImageContainer = styled(ProgressLoader)`
   width: 200px;
   min-height: 250px;
+
+  @media only screen and (max-width: 768px) {
+    width: 100px;
+    min-height: 150px;
+  }
 `;
 
 export const ShowImage = styled.img`
   width: 200px;
   box-shadow: 0 0 2px #aaa;
+
+  @media only screen and (max-width: 768px) {
+    width: 100px;
+  }
 `;
 
 export const ShowDescription = styled(ProgressLoader)`
   width: 400px;
   margin-left: 50px;
+
+  @media only screen and (max-width: 768px) {
+    width: auto;
+    margin-left: 10px;
+    font-size: 14px;
+  }
 `;
 
 export const ShowTitle = styled(ProgressLoader)`

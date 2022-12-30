@@ -36,6 +36,10 @@ export const HighlightOrange = styled.div`
   right: -100px;
   background: ${({ theme }) =>
     `radial-gradient(circle, ${theme?.colors.bg.watusi} 0%, ${theme?.colors.bg.watusi} 50%, transparent 51%, transparent 100%)`};
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const HighlightPurple = styled.div`
@@ -46,6 +50,10 @@ export const HighlightPurple = styled.div`
   left: -400px;
   background: ${({ theme }) =>
     `radial-gradient(circle, ${theme?.colors.bg.melrose} 0%, ${theme?.colors.bg.melrose} 50%, transparent 51%, transparent 100%)`};
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 interface ILoading {

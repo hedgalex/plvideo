@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { RatingIncline } from '../styles';
+import { PopularityBlock, RatingIncline } from '../styles';
 
 export interface IPopularityProps {
   value?: number;
@@ -14,7 +14,7 @@ export const Popularity: React.FC<IPopularityProps> = ({ value, incline = 0 }) =
   }
 
   return (
-    <Box display="flex" justifyContent="center">
+    <PopularityBlock>
       <Box pt="10px">{value}</Box>
       {incline === 0 && <Box width="24px" />}
       {incline > 0 && (
@@ -35,6 +35,6 @@ export const Popularity: React.FC<IPopularityProps> = ({ value, incline = 0 }) =
           </Box>
         </RatingIncline>
       )}
-    </Box>
+    </PopularityBlock>
   );
 };

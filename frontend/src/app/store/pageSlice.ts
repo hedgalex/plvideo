@@ -3,8 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IPageContent, IPageShowInfo } from '~shared/.ifaces';
 import { EResource, EShowTypes } from '~shared/.consts';
 import { searchResult } from './mocks/shows';
-import { rickAndMortyShow } from './mocks/ororo-rick-and-morty';
 import { tvShowsList } from './mocks/tvlist';
+import { superNatural } from './mocks/supernatural';
 
 export interface IPage {
   data: IPageContent;
@@ -85,7 +85,7 @@ const pageSlice = createSlice({
     });
     builder.addCase(fetchShowAction.rejected, (state: IPage) => {
       state.isLoading = false;
-      state.data = rickAndMortyShow;
+      state.data = superNatural;
     });
     builder.addCase(searchAction.pending, (state: IPage) => {
       state.isLoading = true;

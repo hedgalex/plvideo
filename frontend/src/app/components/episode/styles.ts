@@ -25,6 +25,10 @@ export const ItemImage = styled.img`
   background: #eee;
   border: 4px solid #eee;
   border-radius: 10px;
+
+  @media only screen and (max-width: 768px) {
+    left: 40px;
+  }
 `;
 
 export const Info = styled.div`
@@ -33,10 +37,29 @@ export const Info = styled.div`
 
 export const StatisticsBlock = styled.div`
   width: 50px;
-  height: 40px;
+  height: 45px;
   margin-left: -4px;
   cursor: default;
   overflow: hidden;
+`;
+
+export const PopularityBlock = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
+`;
+
+export const ProgressBlock = styled.div`
+  margin-top: 4px;
+  padding-left: 5px;
+  text-align: center;
+
+  @media only screen and (max-width: 768px) {
+    margin-left: -13px;
+  }
 `;
 
 export const Download = styled.div`
@@ -54,18 +77,22 @@ interface IDetailsProps {
 }
 
 export const NamesBlock = styled.div`
+  width: calc(100% - 100px);
   flex-grow: 1;
+  overflow: hidden;
   font-size: 16px;
-  height: 38px;
   cursor: ${({ allowClick }: IGlobalTheme<IDetailsProps>) => (!allowClick ? 'default' : 'pointer')};
   margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '73px' : '15px')};
+
+  @media only screen and (max-width: 768px) {
+    margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '50px' : '5px')};
+  }
 `;
 
 export const Title = styled.div`
-  max-width: 625px;
-  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  overflow: hidden;
   color: black;
   font-weight: 600;
 `;
@@ -92,6 +119,10 @@ export const Action = styled.div`
     color: ${({ status }: IGlobalTheme<{ status: ETaskStatus }>) =>
       status === ETaskStatus.IDLE || status === ETaskStatus.NONE ? '#4756ea' : 'red'};
   }
+
+  @media only screen and (max-width: 768px) {
+    margin: 4px 8px;
+  }
 `;
 
 export const StyledSpinner = styled(Spinner)`
@@ -104,6 +135,10 @@ export const SizeBlock = styled.div`
   color: #a0a2af;
   margin: 12px 10px 0 0;
   font-size: 14px;
+
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const RatingIncline = styled.span<{ incline: number }>`
@@ -112,6 +147,14 @@ export const RatingIncline = styled.span<{ incline: number }>`
   text-align: center;
 `;
 
-export const PopularityIndex = styled.span`
-  margin-top: 10px;
+export const RatingBlock = styled.div`
+  width: 100px;
+  text-align: center;
+  font-size: 14px;
+  padding-top: 6px;
+
+  @media only screen and (max-width: 768px) {
+    width: 50px;
+    font-size: 12px;
+  }
 `;

@@ -9,9 +9,7 @@ export const Downloads: React.FC = () => {
   const { isLoaded, data } = useSelector((state: IState) => state.tasks);
   return (
     <Content>
-      <Header variant="h1" pb="72px">
-        Downloads
-      </Header>
+      <Header variant="h1">Downloads</Header>
       <ProgressLoader loading={!isLoaded}>
         {isLoaded &&
           data.map((task: ITask) => (

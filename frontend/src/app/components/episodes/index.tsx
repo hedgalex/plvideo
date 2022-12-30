@@ -1,11 +1,12 @@
-import { Box, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EResource, getFullEpisodeId } from '~shared/.consts';
 import { IEpisode } from '~shared/.ifaces';
 import { Episode } from '../episode';
+import { Seasons } from './Seasons';
 import { getEpisodeGroups, getHashParams, groupSeasons, NUMBER_EPISODES_IN_LIST } from './utils';
-import { Container, EpisodeGroup, EpisodeGroups, SeasonButton } from './styles';
+import { Container } from './styles';
+import { EpisodeGroups } from './EpisodeGroups';
 
 export interface IEpisodesProps {
   episodes?: IEpisode[];
@@ -54,39 +55,8 @@ export const Episodes: React.FC<IEpisodesProps> = ({ episodes = [] }) => {
 
   return (
     <Container>
-      {seasons.length > 1 && (
-        <Box display="flex" p="10px 0 20px 0">
-          <Typography m="0 5px 0 56px" pt="3px">
-            Seasons:
-          </Typography>
-          <Box display="flex" ml="10px">
-            {groupedSeasons.map((season) => (
-              <SeasonButton
-                key={season.seasonNumber}
-                variant="outlined"
-                className="season-button"
-                isSelected={season.seasonNumber === currentSeason}
-                onClick={handleChangeSeason(season.seasonNumber)}
-              >
-                {season.name}
-              </SeasonButton>
-            ))}
-          </Box>
-        </Box>
-      )}
-      {episodeGroups.length > 0 && (
-        <EpisodeGroups>
-          {episodeGroups.map((episodeGroup, index) => (
-            <EpisodeGroup
-              key={episodeGroup}
-              selected={index === episodeGroupIndex}
-              onClick={handleChangeEpisodeGroup(index)}
-            >
-              {episodeGroup}
-            </EpisodeGroup>
-          ))}
-        </EpisodeGroups>
-      )}
+      <Seasons current={currentSeason} list={groupedSeasons} onChange={handleChangeSeason} />
+      <EpisodeGroups list={episodeGroups} current={episodeGroupIndex} onChange={handleChangeEpisodeGroup} />
       {episodesInGroup.map((episode) => (
         <Episode
           key={episode.id}

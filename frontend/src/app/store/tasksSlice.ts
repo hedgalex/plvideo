@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { EResource } from '~shared/.consts';
-import { tasks } from './mocks/tasks';
+import { tasks2 } from './mocks/tasks';
 
 export interface ITasks {
   data: [];
@@ -41,7 +41,7 @@ const tasksSlice = createSlice({
       state.isLoaded = true;
     });
     builder.addCase(getAllTasks.rejected, (state: ITasks) => {
-      state.data = tasks as any;
+      state.data = tasks2 as any;
       state.isLoaded = true;
     });
   },

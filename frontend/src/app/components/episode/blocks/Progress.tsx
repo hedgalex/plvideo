@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { ETaskStatus } from '~shared/.consts';
-import { Download } from '../styles';
+import { Download, ProgressBlock } from '../styles';
 
 export interface IProgressProps {
   downloaded?: number;
@@ -13,9 +13,9 @@ export const Progress: React.FC<IProgressProps> = ({ downloaded = 0, status = ET
   }
 
   return (
-    <Box mt="1px" pl="5px" textAlign="center">
+    <ProgressBlock>
       <Box fontSize="12px">{downloaded}%</Box>
       <Download completed={downloaded} />
-    </Box>
+    </ProgressBlock>
   );
 };
