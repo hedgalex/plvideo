@@ -20,6 +20,7 @@ export const Downloads: React.FC = () => {
               title={task.title}
               subtitle={task.subtitle}
               image={task.image}
+              resources={[task.resource]}
               isDownloadable
             />
           ))}
