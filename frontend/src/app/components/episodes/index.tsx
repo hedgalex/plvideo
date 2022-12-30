@@ -91,6 +91,7 @@ export const Episodes: React.FC<IEpisodesProps> = ({ episodes = [] }) => {
         <Episode
           key={episode.id}
           id={episode.id}
+          showId={episode.id}
           title={episode.title ?? `Episode ${episode.episode}`}
           subtitle={getFullEpisodeId(episode.season, episode.episode)}
           resources={episode.resources}

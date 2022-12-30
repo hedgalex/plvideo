@@ -13,6 +13,7 @@ import { IDetails } from './.ifaces/IDetails';
 import { IDetailsEpisode } from './.ifaces/IDetailsEpisode';
 
 const DAY = 24 * 60 * 60 * 1000;
+const DEFAULT_POPULARITY = 999;
 
 @Injectable()
 export class DetailsService {
@@ -107,7 +108,7 @@ export class DetailsService {
       type,
       description,
       year,
-      popularity: currentRank,
+      popularity: currentRank > DEFAULT_POPULARITY ? DEFAULT_POPULARITY : currentRank,
       popularityIncline: rankIncline,
       votedImdb,
       ratingImdb,
@@ -288,6 +289,15 @@ export class DetailsService {
         imdb: details.imdb,
         sync: time,
         type: details.type,
+        ...(details.resource === EResource.IMDB && {
+          popularity: details.popularity,
+          popularityIncline: details.popularityIncline,
+          ratingImdb: details.ratingImdb,
+          votedImdb: details.votedImdb,
+        }),
+        ...(details.resource !== EResource.IMDB && {
+          popularity: DEFAULT_POPULARITY,
+        }),
       });
     } else {
       this.showsRepository.update(

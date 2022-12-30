@@ -16,7 +16,7 @@ export const UpdateButton: React.FC<IUpdateButtonProps> = ({ lastUpdate, resourc
     if (!lastUpdate) {
       return '';
     }
-    return new Date(lastUpdate).toLocaleString('en-NZ');
+    return new Date(parseInt(lastUpdate.toString(), 10)).toLocaleString('en-NZ');
   }, [lastUpdate]);
 
   const handleClick = (resource: EResource) => () => {

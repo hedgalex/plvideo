@@ -11,10 +11,10 @@ import { Size } from './blocks/Size';
 import { DownloadAction } from './blocks/DownloadAction';
 import { Popularity } from './blocks/Popularity';
 import { Info, EpisodeItem, ItemImage, Title, Subtitle, NamesBlock, StatisticsBlock } from './styles';
-import { Loader } from '../../styles';
 
 export interface IEpisodeProps {
   id?: number;
+  showId?: number;
   title?: string;
   subtitle?: string | number;
   resources?: EResource[];
@@ -30,6 +30,7 @@ export interface IEpisodeProps {
 
 export const Episode: React.FC<IEpisodeProps> = ({
   id = 0,
+  showId = 0,
   title = '',
   subtitle = '',
   resources = [],
@@ -43,7 +44,7 @@ export const Episode: React.FC<IEpisodeProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [showRequested, setShowRequested] = useState<boolean>(false);
+  const [isShowRequested, setShowRequested] = useState<boolean>(false);
   const { status, changeStatus, size, downloaded } = useProgress(id, {
     enabled: !!id && isDownloadable,
   });
@@ -57,33 +58,33 @@ export const Episode: React.FC<IEpisodeProps> = ({
     //TODO Block other records. Set current one
     setShowRequested(true);
     if (resourceShowId) {
-      await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId: id }));
+      await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId }));
     }
-    navigate(`/show/${id}`);
+    navigate(`/show/${showId}`);
   };
 
-  if (showRequested) {
-    return <Loader />;
-  }
-
   return (
-    <EpisodeItem>
-      {image && <ItemImage src={image} />}
-      <Info>
-        <StatisticsBlock>
-          <Progress status={status} downloaded={downloaded} />
-          <Popularity value={popularity} incline={popularityIncline} />
-        </StatisticsBlock>
-        <NamesBlock onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!image}>
-          <Title>{title}</Title>
-          <Subtitle>{subtitle}</Subtitle>
-        </NamesBlock>
-        <RatingBlock>
-          <Size value={size} />
-          <Rating value={ratingImdb} voted={votedImdb} />
-        </RatingBlock>
-        {isDownloadable && <DownloadAction status={status} onClick={handleActionClick} />}
-      </Info>
+    <EpisodeItem loading={isShowRequested}>
+      {!isShowRequested && (
+        <>
+          {image && <ItemImage src={image} />}
+          <Info>
+            <StatisticsBlock>
+              <Progress status={status} downloaded={downloaded} />
+              <Popularity value={popularity} incline={popularityIncline} />
+            </StatisticsBlock>
+            <NamesBlock onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!image}>
+              <Title>{title}</Title>
+              <Subtitle>{subtitle}</Subtitle>
+            </NamesBlock>
+            <RatingBlock>
+              <Size value={size} />
+              <Rating value={ratingImdb} voted={votedImdb} />
+            </RatingBlock>
+            {isDownloadable && <DownloadAction status={status} onClick={handleActionClick} />}
+          </Info>
+        </>
+      )}
     </EpisodeItem>
   );
 };

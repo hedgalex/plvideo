@@ -9,6 +9,7 @@ export const GlobalStyle = createGlobalStyle<IGlobalTheme<{ dark?: boolean }>>`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: ${({ theme, dark }) => (dark ? 'black' : theme?.colors.bg.catskillWhite)};
+    overflow-x: hidden;
   }
 
   @keyframes placeHolderShimmer {
@@ -73,15 +74,10 @@ export const ProgressLoader = styled.div<ILoading>`
     animation-iteration-count: infinite;
     animation-name: placeHolderShimmer;
     animation-timing-function: linear;
-    background-color: #fff;
+    background-color: white;
     background-size: 800px 300px;
+    min-height: 40px;
   `}
-`;
-
-export const Loader = styled(ProgressLoader)`
-  position: relative;
-  height: 60px;
-  border-radius: 16px;
 `;
 
 export const Spinner = styled.div<{

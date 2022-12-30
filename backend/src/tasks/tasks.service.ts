@@ -106,6 +106,7 @@ export class TasksService {
     return (
       tasks?.map((task) => ({
         id: task.id,
+        showId: task.episode?.show?.id,
         title: task.episode?.title,
         subtitle: getFullEpisodeId(task.episode?.season ?? 0, task.episode.episode ?? 0),
         image: task.episode?.show?.image ?? '',

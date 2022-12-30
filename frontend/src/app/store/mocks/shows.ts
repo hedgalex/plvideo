@@ -2,70 +2,63 @@ import { EResource, EShowTypes } from '~shared/.consts';
 
 export const searchResult = [
   {
-    imdbId: '0060028',
-    resource: EResource.IMDB,
+    resources: [EResource.IMDB],
     title: 'Star Trek',
-    hash: 0,
-    imagePreview:
+    id: 8890843246488445,
+    image:
       'https://m.media-amazon.com/images/M/MV5BNDRkMTNiNjgtZDIyOC00NmE1LTlkZjEtMGZiNTcyZDQ0NjcxXkEyXkFqcGdeQXVyNTE1NjY5Mg@@._V1_.jpg',
-    type: EShowTypes.TVSHOW,
+    type: 1,
     year: 1966,
-    resourceShowId: '0060028',
+    resourceShowId: 'tt0060028',
   },
   {
-    imdbId: '0076759',
-    resource: EResource.IMDB,
-    title: 'Star Wars: Episode IV - A New Hope',
-    hash: 0,
-    imagePreview:
-      'https://m.media-amazon.com/images/M/MV5BOTA5NjhiOTAtZWM0ZC00MWNhLThiMzEtZDFkOTk2OTU1ZDJkXkEyXkFqcGdeQXVyMTA4NDI1NTQx._V1_.jpg',
-    type: EShowTypes.MOVIE,
-    year: 1977,
-    resourceShowId: '0076759',
-  },
-  {
-    imdbId: '0092455',
-    resource: EResource.IMDB,
+    resources: [EResource.IMDB],
     title: 'Star Trek: The Next Generation',
-    hash: 0,
-    imagePreview:
+    id: 2988803902618679,
+    image:
       'https://m.media-amazon.com/images/M/MV5BOWFhYjE4NzMtOWJmZi00NzEyLTg5NTctYmIxMTU1ZDIxMDAyXkEyXkFqcGdeQXVyNTE1NjY5Mg@@._V1_.jpg',
-    type: EShowTypes.TVSHOW,
+    type: 1,
     year: 1987,
-    resourceShowId: '0092455',
+    resourceShowId: 'tt0092455',
   },
   {
-    imdbId: '5171438',
-    resource: EResource.IMDB,
+    resources: [EResource.IMDB],
     title: 'Star Trek: Discovery',
-    hash: 0,
-    imagePreview:
+    id: 4381281537532872,
+    image:
       'https://m.media-amazon.com/images/M/MV5BNjg1NTc2MDktZTU5Ni00OTZiLWIyNjQtN2FhNGY4MzAxNmZkXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg',
-    type: EShowTypes.TVSHOW,
+    type: 1,
     year: 2017,
-    resourceShowId: '5171438',
+    resourceShowId: 'tt5171438',
   },
   {
-    imdbId: '8806524',
-    resource: EResource.IMDB,
-    title: 'Star Trek: Picard',
-    hash: 0,
-    imagePreview:
-      'https://m.media-amazon.com/images/M/MV5BMzY3MTcyNTktZGY0Yy00MmNhLTllYjQtMWFkNGM1YzNiOWRkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg',
-    type: EShowTypes.TVSHOW,
-    year: 2020,
-    resourceShowId: '8806524',
+    resources: [EResource.IMDB],
+    title: 'Star Wars: Episode IV - A New Hope',
+    id: 8961740115176478,
+    image:
+      'https://m.media-amazon.com/images/M/MV5BOTA5NjhiOTAtZWM0ZC00MWNhLThiMzEtZDFkOTk2OTU1ZDJkXkEyXkFqcGdeQXVyMTA4NDI1NTQx._V1_.jpg',
+    type: 2,
+    year: 1977,
+    resourceShowId: 'tt0076759',
   },
   {
-    imdbId: '0112178',
-    resource: EResource.IMDB,
-    title: 'Star Trek: Voyager',
-    hash: 0,
-    imagePreview:
-      'https://m.media-amazon.com/images/M/MV5BYWIwMTI4NzctZmNjZi00OGU2LThhMGItZDI0ODAwOWI1NTFlXkEyXkFqcGdeQXVyNTE1NjY5Mg@@._V1_.jpg',
-    type: EShowTypes.TVSHOW,
-    year: 1995,
-    resourceShowId: '0112178',
+    resources: [EResource.IMDB],
+    title: 'The Star',
+    id: 6332018934095456,
+    image: 'https://m.media-amazon.com/images/M/MV5BMTU4MDQ4NTM2N15BMl5BanBnXkFtZTgwNDM1NTIzMzI@._V1_.jpg',
+    type: 2,
+    year: 2017,
+    resourceShowId: 'tt4587656',
+  },
+  {
+    resources: [EResource.IMDB],
+    title: 'Star Trek: Strange New Worlds',
+    id: 7729470027862058,
+    image:
+      'https://m.media-amazon.com/images/M/MV5BYWNlYmZkZjQtNjU5OS00YTNkLWJmOTEtYmZiMmUwZGI3NTM3XkEyXkFqcGdeQXVyMTM2NTIwMDIw._V1_.jpg',
+    type: 1,
+    year: 2022,
+    resourceShowId: 'tt12327578',
   },
 ];
 

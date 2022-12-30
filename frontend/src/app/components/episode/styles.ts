@@ -1,17 +1,19 @@
 import styled from 'styled-components';
 import { IGlobalTheme } from '~app/theme';
 import { ETaskStatus } from '~shared/.consts';
-import { Spinner } from '../../styles';
+import { ProgressLoader, Spinner } from '~app/styles';
 
-export const EpisodeItem = styled.div`
+export const EpisodeItem = styled(ProgressLoader)`
   position: relative;
   border-radius: 16px;
   padding: 10px;
   margin-bottom: 25px;
-  background: white;
+
   :hover {
     outline: 1px solid #eee;
   }
+
+  ${({ loading = false }) => !loading && `background: white;`}
 `;
 
 export const ItemImage = styled.img`

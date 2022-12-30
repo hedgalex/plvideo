@@ -6,11 +6,11 @@ import { IState, useAppDispatch } from '~store/index';
 import { searchAction } from '~store/pageSlice';
 import { Input } from '~components/input/styles';
 import { Episode } from '~components/episode';
-import { Loader } from '~app/styles';
-import { Content, Header } from '~app/content/styles';
-import { SearchContainer, StyledChip } from './styles';
 import { EResource, EShowTypes } from '~shared/.consts';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
+import { ProgressLoader } from '~app/styles';
+import { Content, Header } from '~app/content/styles';
+import { SearchContainer, StyledChip } from './styles';
 
 export const SearchPage: React.FC = () => {
   const location = useLocation();
@@ -72,11 +72,12 @@ export const SearchPage: React.FC = () => {
           />
         </Stack>
       </SearchContainer>
-      {isLoading && <Loader />}
+      {isLoading && <ProgressLoader loading />}
       {!isLoading &&
         items.map((item) => (
           <Episode
             id={item.id}
+            showId={item.id}
             key={item.resourceShowId}
             title={item.title}
             subtitle={item.type === EShowTypes.MOVIE ? 'Movie' : 'TVShow'}

@@ -3,6 +3,7 @@ import { EResource } from '../.consts/EResource';
 
 export interface ITask {
 	id: number;
+	showId: number;
 	title: string;
 	subtitle: string;
 	image: string;

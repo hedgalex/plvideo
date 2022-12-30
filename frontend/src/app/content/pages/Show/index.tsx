@@ -67,6 +67,7 @@ export const ShowPage: React.FC = () => {
             {show?.type === EShowTypes.MOVIE && (
               <Episode
                 id={show.id}
+                showId={show.id}
                 title={show?.title}
                 subtitle={show?.year}
                 resources={show?.resources}

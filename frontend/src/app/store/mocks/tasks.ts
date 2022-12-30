@@ -4,6 +4,7 @@ export const tasks = [
   [
     {
       id: 7444507090052396,
+      showId: 4633326803461405,
       title: 'The Idea of North',
       subtitle: 's01e02',
       image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/1821/thumb_l5Mju9x81vP4Z28wO4ClzKthJim.jpg',
@@ -16,6 +17,7 @@ export const tasks = [
     },
     {
       id: 741422564592334,
+      showId: 4633326803461405,
       title: "Lyra's Jordan",
       subtitle: 's01e01',
       image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/1821/thumb_l5Mju9x81vP4Z28wO4ClzKthJim.jpg',
