@@ -2,7 +2,7 @@ import axios from 'axios';
 import parse from 'node-html-parser';
 import { Logger } from '@nestjs/common';
 import { Tasks } from '~server/entities/tasks';
-import { directDownload } from '../utils';
+import { directDownload, removeFile } from '../utils';
 import { IDownloaderProps } from '../.ifaces/IDownloaderProps';
 import { configService } from '../../config/config.service';
 
@@ -55,8 +55,13 @@ const AnimeCultDownloader = () => {
     });
   };
 
+  const removeFiles = async (task: Tasks) => {
+    removeFile(task.path);
+  };
+
   return {
     download,
+    removeFiles,
   };
 };
 

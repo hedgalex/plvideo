@@ -4,6 +4,7 @@ import progress from 'progress-stream';
 import axios from 'axios';
 import { AbortController } from 'node-abort-controller';
 import { IDownloaderProps } from './.ifaces/IDownloaderProps';
+import { readdir } from 'fs';
 
 export const directDownload = async (url: string, filepath: string, props: IDownloaderProps) => {
   // delete file if exists
@@ -40,4 +41,17 @@ export const directDownload = async (url: string, filepath: string, props: IDown
   }
 
   response.data.pipe(spyStream).pipe(fileWriteStream);
+};
+
+export const removeFile = async (filepath: string): Promise<void> => {
+  if (fs.existsSync(filepath)) {
+    fs.unlinkSync(filepath);
+  }
+
+  const dirName = path.dirname(filepath);
+  readdir(dirName, (_, files) => {
+    if (files?.length === 0) {
+      fs.unlinkSync(dirName);
+    }
+  });
 };

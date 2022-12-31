@@ -21,4 +21,20 @@ export class DownloadService {
       }
     }
   }
+
+  async removeFiles(task: Tasks) {
+    switch (task.downloadResource.name) {
+      case 'ORORO': {
+        ororoDownloader.removeFiles(task);
+        break;
+      }
+      case 'ANIME_CULT': {
+        animeCultDownloader.removeFiles(task);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
 }

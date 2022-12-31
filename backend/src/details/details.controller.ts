@@ -1,16 +1,41 @@
-import { Body, Controller, Get, HttpStatus, ParseEnumPipe, ParseIntPipe, Post, Put, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  ParseEnumPipe,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
-import { DetailsService } from './details.service';
-import { IPageShowInfo } from '~shared/.ifaces';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { EResource } from '~shared/.consts';
+import { DetailsService } from './details.service';
+import { RECENT_COOKIE_NAME, addRecent } from '../utils/recent';
 
 @Controller('/api/details')
 export class DetailsController {
   constructor(private readonly detailsService: DetailsService) {}
 
   @Get()
-  async getDetails(@Query('id', ParseIntPipe) id: number): Promise<IPageShowInfo> {
-    return await this.detailsService.getDetails(id);
+  async getDetails(
+    @Req() request: FastifyRequest,
+    @Res() response: FastifyReply,
+    @Query('id', ParseIntPipe) id: number,
+  ): Promise<void> {
+    const result = await this.detailsService.getDetails(id);
+    const oldCookies = request.cookies[RECENT_COOKIE_NAME];
+    const newCookies = addRecent(id, oldCookies);
+    if (oldCookies !== newCookies) {
+      response.setCookie(RECENT_COOKIE_NAME, newCookies);
+    }
+
+    response.status(HttpStatus.OK).send(result);
+    return;
   }
 
   @Post('/add')

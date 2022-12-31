@@ -24,6 +24,7 @@
     "migration": "npx typeorm-ts-node-commonjs migration:run"
   },
   "dependencies": {
+    "@fastify/cookie": "^8.3.0",
     "@fastify/static": "^6.6.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
@@ -33,6 +34,7 @@
     "@nestjs/serve-static": "^3.0.0",
     "@nestjs/typeorm": "^9.0.1",
     "axios": "^1.2.0",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "node-html-parser": "^6.1.4",
     "pg": "^8.8.0",
@@ -46,6 +48,7 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@types/cookie-parser": "^1.4.3",
     "@types/cron": "^2.0.0",
     "@types/express": "^4.17.13",
     "@types/jest": "28.1.8",

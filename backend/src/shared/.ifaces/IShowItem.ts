@@ -7,7 +7,7 @@ export interface IShowItem {
   type?: EShowTypes;
   image?: string;
   year?: number;
-  episodes?: number;
+  // episodes?: number;
   resourceShowId?: string;
   resourceEpisodeId?: string;
   popularity?: number;

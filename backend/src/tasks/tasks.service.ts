@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tasks } from '~server/entities/tasks';
 import { configService } from '../config/config.service';
-import { DetailsService } from '../details/details.service';
 import { DownloadService } from '../downloads/download.service';
 import { EResource, EShowTypes, ETaskStatus, getFullEpisodeId } from '~shared/.consts';
 import { ITask } from '../shared/.ifaces';
@@ -19,8 +18,6 @@ export class TasksService {
   private readonly logger = new Logger(TasksService.name);
   @Inject(DownloadService)
   private readonly downloadService: DownloadService;
-  @Inject(DetailsService)
-  private readonly detailsService: DetailsService;
   private readonly watchdogTimeout: number;
   constructor(
     @InjectRepository(Tasks)
@@ -70,7 +67,7 @@ export class TasksService {
         if (!task) {
           controller && controller.abort();
           this.logger.warn(`Downloading ${idleTask.url} to ${idleTask.path} has been interrupted.`);
-          //TODO Remove files
+          this.downloadService.removeFiles(idleTask);
           return;
         }
         await this.tasksRepository.update({ id: idleTask.id }, { downloaded });

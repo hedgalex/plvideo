@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shows } from '../entities/shows';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { EResource, EShowTypes } from '~shared/.consts';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
 
@@ -23,22 +23,26 @@ export class ShowsService {
     });
 
     return {
-      items: items.map((item: Shows) => ({
-        id: item.id,
-        image: item.image,
-        title: item.title,
-        type,
-        year: item.year,
-        popularity: item.popularity,
-        popularityIncline: item.popularityIncline,
-        ratingImdb: item.ratingImdb,
-        votedImdb: item.votedImdb,
-        resources: [item.ororo && EResource.ORORO, item.ac && EResource.AC, item.imdb && EResource.IMDB].filter(
-          (item) => item,
-        ),
+      items: items.map(({ ororo, ac, imdb, ...item }: Shows) => ({
+        ...item,
+        resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
       })),
       page,
       count: 0,
     };
+  }
+
+  async getRecent(recentIds: number[]): Promise<IPageListResult<IShowItem>> {
+    if (recentIds.length > 0) {
+      const items = await this.showsRepository.find({ where: { id: In(recentIds) } });
+      return {
+        items: items.map(({ ororo, ac, imdb, ...item }: Shows) => ({
+          ...item,
+          resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
+        })),
+      };
+    }
+
+    return { items: [], page: 0, count: 0 };
   }
 }

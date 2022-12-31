@@ -32,6 +32,11 @@ export const readTopAction = createAsyncThunk(
   },
 );
 
+export const readRecentAction = createAsyncThunk('list/recent', async () => {
+  const { data } = await axios.get(`/api/recent`);
+  return data;
+});
+
 export const fetchShowAction = createAsyncThunk('show/fetch', async ({ id }: { id: number | string }) => {
   const { data } = await axios.get('/api/details', { params: { id } });
   return data;
@@ -87,6 +92,7 @@ const pageSlice = createSlice({
       state.isLoading = false;
       state.data = superNatural;
     });
+
     builder.addCase(searchAction.pending, (state: IPage) => {
       state.isLoading = true;
     });
@@ -104,12 +110,21 @@ const pageSlice = createSlice({
     builder.addCase(saveShowTitleAction.fulfilled, (state: IPage, { payload }) => {
       (state.data as IPageShowInfo).title = payload;
     });
+
     builder.addCase(readTopAction.fulfilled, (state: IPage, { payload }) => {
       state.data = payload;
     });
     builder.addCase(readTopAction.rejected, (state: IPage) => {
       state.data = tvShowsList;
     });
+
+    builder.addCase(readRecentAction.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+    });
+    builder.addCase(readRecentAction.rejected, (state: IPage) => {
+      state.data = tvShowsList;
+    });
+
     builder.addCase(updateShowAction.pending, (state: IPage) => {
       state.isLoading = true;
     });

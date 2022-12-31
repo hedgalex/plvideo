@@ -10,6 +10,7 @@ import { SearchPage } from './pages/Search';
 import { ShowPage } from './pages/Show';
 import { Downloads } from './pages/Downloads';
 import { Container, Logo, Nav, NavItem, NavTitle } from './styles';
+import { Recent } from './pages/Recent';
 
 export const Routes: React.FC = () => (
   <Container>
@@ -43,6 +44,7 @@ export const Routes: React.FC = () => (
       <Route path="/search" element={<SearchPage />} />
       <Route path="/show/:id" element={<ShowPage />} />
       <Route path="/downloads" element={<Downloads />} />
+      <Route path="/recent" element={<Recent />} />
     </RouterRoutes>
   </Container>
 );
