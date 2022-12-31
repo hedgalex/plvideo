@@ -332,8 +332,17 @@ export class DetailsService {
           season: 0,
           ororo: show.ororo,
           imdb: show.imdb,
-          ac: show.imdb,
+          ac: show.ac,
         });
+      } else {
+        await this.episodesRepository.update(
+          { id },
+          {
+            ororo: details.ororo ?? show.ororo,
+            imdb: details.imdb ?? show.imdb,
+            ac: details.ac ?? show.ac,
+          },
+        );
       }
 
       return;
