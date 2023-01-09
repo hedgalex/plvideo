@@ -20,13 +20,26 @@ const OroroDownloader = () => {
       Connection: 'keep-alive',
     };
 
-    await directDownload(`${task.url}_subtitle/en`, subtitlePathEn, { headers });
-    await directDownload(`${task.url}_subtitle/ru`, subtitlePathRu, { headers });
+    try {
+      await directDownload(`${task.url}_subtitle/en`, subtitlePathEn, { headers });
+    } catch (error) {
+      logger.error('Error: Could not download EN subtitles', error);
+    }
 
-    await directDownload(task.url, task.path, {
-      headers,
-      ...props,
-    });
+    try {
+      await directDownload(`${task.url}_subtitle/ru`, subtitlePathRu, { headers });
+    } catch (error) {
+      logger.error('Error: Could not download RU subtitles', error);
+    }
+
+    try {
+      await directDownload(task.url, task.path, {
+        headers,
+        ...props,
+      });
+    } catch (error) {
+      logger.error('Error: Could not download the video', error);
+    }
   };
 
   const removeFiles = async (task: Tasks) => {

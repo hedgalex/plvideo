@@ -131,10 +131,7 @@ export class DetailsService {
     const year = parseInt(yearDetails?.querySelector('.serial-info-value')?.text ?? '2000', 10);
     const description = root.querySelector('.serial-description')?.text ?? '';
     const typeDetails = details.find((item) => item.querySelector('.badge-success'));
-    const type = typeDetails?.querySelector('.badge-success')?.getAttribute('href')?.includes('tv_series')
-      ? EShowTypes.TVSHOW
-      : EShowTypes.MOVIE;
-
+    const type = typeDetails?.querySelector('.badge-success[href*="tv_series"]') ? EShowTypes.TVSHOW : EShowTypes.MOVIE;
     const episodes = [] as IDetailsEpisode[];
     items?.forEach((item) => {
       if (item.getAttribute('href') === '#') {
@@ -156,7 +153,6 @@ export class DetailsService {
     });
 
     episodes.reverse();
-
     return {
       id,
       title: title,
