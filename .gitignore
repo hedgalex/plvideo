@@ -26,6 +26,9 @@ yarn-error.log*
 backend/dist
 frontend/build
 frontend/public/posters/*
+tvshows/*
+movies/*
+
 # Logs
 logs
 *.log

@@ -48,4 +48,10 @@ export class Tasks extends BaseEntity {
 
   @Column({ name: 'task_status_id' })
   taskStatusId: number;
+
+  @Column()
+  title: string;
+
+  @Column()
+  season: number;
 }

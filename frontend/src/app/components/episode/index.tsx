@@ -55,7 +55,6 @@ export const Episode: React.FC<IEpisodeProps> = ({
   }, [status, resources]);
 
   const navigateToShowsPage = async () => {
-    //TODO Block other records. Set current one
     setShowRequested(true);
     if (resourceShowId) {
       await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId }));

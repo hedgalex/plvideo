@@ -101,19 +101,27 @@ export class TasksService {
     });
 
     return (
-      tasks?.map((task) => ({
-        id: task.id,
-        showId: task.episode?.show?.id,
-        title: task.episode?.title,
-        subtitle: getFullEpisodeId(task.episode?.season ?? 0, task.episode.episode ?? 0),
-        image: task.episode?.show?.image ?? '',
-        started: task.started,
-        finished: task.finished,
-        size: task.size,
-        downloaded: task.downloaded,
-        resource: task.downloadResource.name as EResource,
-        taskStatus: task.taskStatus.name as ETaskStatus,
-      })) ?? []
+      tasks?.map((task) => {
+        const { episode } = task;
+        const type = episode?.show?.type;
+
+        return {
+          id: task.id,
+          showId: episode?.show?.id,
+          title: type === EShowTypes.MOVIE ? episode?.show?.title : episode?.title,
+          subtitle:
+            type === EShowTypes.MOVIE
+              ? `${episode?.show?.year}`
+              : getFullEpisodeId(episode?.season ?? 0, episode?.episode ?? 0),
+          image: episode?.show?.image ?? '',
+          started: task.started,
+          finished: task.finished,
+          size: task.size,
+          downloaded: task.downloaded,
+          resource: task.downloadResource.name as EResource,
+          taskStatus: task.taskStatus.name as ETaskStatus,
+        };
+      }) ?? []
     );
   }
 
