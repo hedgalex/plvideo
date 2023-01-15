@@ -186,7 +186,10 @@ export class TasksService {
   }
 
   async removeTask(id: number) {
-    const task = await this.tasksRepository.findOne({ where: { id } });
+    const task = await this.tasksRepository.findOne({ 
+      relations: { taskStatus: true, downloadResource: true }, 
+      where: { id },
+    });
     await this.downloadService.removeFiles(task);
     return await this.tasksRepository.delete({ id });
   }
