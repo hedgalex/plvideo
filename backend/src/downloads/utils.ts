@@ -51,11 +51,15 @@ export const removeFile = async (filepath: string): Promise<void> => {
     if (fs.existsSync(filepath)) {
       fs.unlinkSync(filepath);
     }
-  
+    
     const dirName = path.dirname(filepath);
     readdir(dirName, (_, files) => {
       if (files?.length === 0) {
-        fs.unlinkSync(dirName);
+        try {
+          fs.unlinkSync(dirName);
+        } catch (e) {
+          logger.error(`Could not remove the directory ${dirName}`);      
+        }
       }
     });
   } catch(e) {

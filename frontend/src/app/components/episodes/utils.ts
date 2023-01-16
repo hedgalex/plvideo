@@ -20,21 +20,33 @@ export const getHashParams = (hash = '#'): Record<string, number> => {
   return result;
 };
 
-export const groupSeasons = (seasons: number[], currentSeason: number): ISeason[] =>
-  seasons
+const dec = (num: number): number => (num <= 10 ? 0 : Math.floor((num - 1) / 10));
+
+export const groupSeasons = (seasons: number[], selectedSeason: number): ISeason[] => {
+  const selectedDec = dec(selectedSeason);
+  const lastSeason = seasons[seasons.length - 1];
+  const firstElementIsZero = seasons[0] === 0;
+  return seasons
     .map((season: number, idx: number) => {
-      if (Math.floor(idx / 10) === Math.floor(currentSeason / 10)) {
+      const seasonNumber = seasons[idx];
+      const currentDec = dec(seasonNumber);
+      if (currentDec === selectedDec) {
         return { name: season, seasonNumber: season };
-      } else if (idx % 10 === 0) {
+      } else if (seasonNumber === 0 || ((seasonNumber - 1) % 10 === 0 && (seasonNumber !== 1 || !firstElementIsZero))) {
+        const name = `${seasonNumber}${seasonNumber <= seasons.length && ' - '}${Math.min(
+          (currentDec + 1) * 10,
+          lastSeason,
+        )}`;
         return {
-          name: `${seasons[idx]}${idx + 1 <= seasons.length && ' - '}${Math.min(idx + 9, seasons[seasons.length - 1])}`,
-          seasonNumber: seasons[idx],
+          name,
+          seasonNumber,
         };
       } else {
         return null;
       }
     })
     .filter((item) => item !== null) as ISeason[];
+};
 
 export const getEpisodeGroups = (episodes: IEpisode[]): string[] => {
   const result = [] as string[];

@@ -96,6 +96,22 @@ export const superNatural = {
       resources: [EResource.ORORO],
     },
     {
+      id: 1233088058901462,
+      title: 'Test episode',
+      season: 0,
+      episode: 0,
+      release: 1126555200000,
+      resources: [EResource.ORORO],
+    },
+    {
+      id: 1233088058901461,
+      title: 'Test episode 2',
+      season: 0,
+      episode: 1,
+      release: 1126555200000,
+      resources: [EResource.ORORO],
+    },
+    {
       id: 1233088058901465,
       title: 'Pilot',
       season: 1,

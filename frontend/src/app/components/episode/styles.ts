@@ -77,7 +77,6 @@ interface IDetailsProps {
 }
 
 export const NamesBlock = styled.div`
-  width: calc(100% - 100px);
   flex-grow: 1;
   overflow: hidden;
   font-size: 16px;

@@ -3,8 +3,8 @@ import { EResource, ETaskStatus } from '~shared/.consts';
 export const tasks1 = [
   [
     {
-      id: 7444507090052396,
-      showId: 4633326803461405,
+      id: 3942761208059153,
+      showId: 4240345227134950,
       title: 'The Idea of North',
       subtitle: 's01e02',
       image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/1821/thumb_l5Mju9x81vP4Z28wO4ClzKthJim.jpg',
@@ -33,8 +33,8 @@ export const tasks1 = [
 
 export const tasks2 = [
   {
-    id: 14743337955572,
-    showId: 6691293983816522,
+    id: 1233088058901465,
+    showId: 4240345227134950,
     title: 'You Reap What You Woe',
     subtitle: 's01e05',
     image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/3053/thumb_z7TQV2AwI2bLYyQ68QHxfAPfaJZ.jpg',
@@ -47,27 +47,27 @@ export const tasks2 = [
   },
   {
     id: 8470794612711960,
-    showId: 6691293983816522,
+    showId: 4240345227134950,
     title: 'Friend or Woe',
     subtitle: 's01e03',
     image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/3053/thumb_z7TQV2AwI2bLYyQ68QHxfAPfaJZ.jpg',
     started: '1672416306090',
     finished: null,
     size: '2234620026',
-    downloaded: '28229632',
+    downloaded: '58229632',
     resource: EResource.ORORO,
     taskStatus: ETaskStatus.IN_PROGRESS,
   },
   {
-    id: 588816617435421,
-    showId: 6691293983816522,
+    id: 6576424532871056,
+    showId: 4240345227134950,
     title: "Wednesday's Child Is Full of Woe",
     subtitle: 's01e01',
     image: 'https://uploads.ororo-mirror.tv/uploads/show/poster/3053/thumb_z7TQV2AwI2bLYyQ68QHxfAPfaJZ.jpg',
     started: '1672416304147',
     finished: null,
     size: '2747497264',
-    downloaded: '56442880',
+    downloaded: '186442880',
     resource: EResource.ORORO,
     taskStatus: ETaskStatus.IN_PROGRESS,
   },
