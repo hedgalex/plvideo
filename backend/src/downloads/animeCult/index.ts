@@ -48,7 +48,7 @@ const AnimeCultDownloader = () => {
     }
 
     const partSibnetUrl = parse(iframeData).getElementsByTagName('iframe')[0].getAttribute('src');
-    const sibnetUrl = `https:${partSibnetUrl}`;
+    const sibnetUrl = partSibnetUrl?.startsWith('http') ? partSibnetUrl : `https:${partSibnetUrl}`;
 
     const { data: videoContent } = await axios.get(sibnetUrl);
     const [, videoUrl = ''] = videoContent.match(/[\S\s]*?player.src\(\[\{src:\s*?"(.+?)"[\S\s]*/);
@@ -73,17 +73,17 @@ const AnimeCultDownloader = () => {
     const { data: iframeData } = await axios.get(`https://z.animecult.org/personal/ajax?id=${videoCultId}`, {
       headers: { Cookie: configService.getAnimecultCookies() },
     });
-    
+
     const url = parse(iframeData).getElementsByTagName('iframe')[0].getAttribute('src');
-    
+
     const { data: videoContent } = await axios.get(url, { headers: { 'accept-encoding': '' } });
     const videoUrl = videoContent.match(/createPlayer\("v=([\s\S]*?)\\u0026/)?.[1];
-    
+
     if (!videoUrl) {
       logger.error('Have not found video URL');
       return;
     }
-    
+
     directDownload(decodeURIComponent(videoUrl), task.path, {
       headers: {
         Connection: 'keep-alive',
@@ -93,7 +93,6 @@ const AnimeCultDownloader = () => {
   };
 
   const download = async (task: Tasks, props: IDownloaderProps) => {
-    
     const response = await axios.get(task.url);
     const { data } = response;
 
@@ -106,7 +105,7 @@ const AnimeCultDownloader = () => {
     }
 
     const mikadoxSubsEpisode = findEnglishSubs(root);
-    
+
     if (mikadoxSubsEpisode) {
       await downloadMikadox(mikadoxSubsEpisode, task, props);
       return;

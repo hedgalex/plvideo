@@ -63,6 +63,7 @@ export const NavItem = styled.a`
 `;
 
 export const NavTitle = styled(Box)`
+  margin-top: 2px;
   margin-left: 20px;
 
   @media only screen and (max-width: 768px) {

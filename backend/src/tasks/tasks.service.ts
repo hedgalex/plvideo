@@ -176,18 +176,26 @@ export class TasksService {
 
     const { show } = episode;
     const downloadUrl = `${AC_URL}${show.ac}/episode/${episode.episode}`;
-
-    this.tasksRepository.insert({
-      id: episode.id,
-      path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
-      url: downloadUrl,
-      downloadResourceId: 2,
-    });
+    if (show.type === EShowTypes.TVSHOW) {
+      this.tasksRepository.insert({
+        id: episode.id,
+        path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
+        url: downloadUrl,
+        downloadResourceId: 2,
+      });
+    } else {
+      this.tasksRepository.insert({
+        id: episode.id,
+        path: getMovieFilePath(show.title, show.year, 'mp4'),
+        url: downloadUrl,
+        downloadResourceId: 2,
+      });
+    }
   }
 
   async removeTask(id: number) {
-    const task = await this.tasksRepository.findOne({ 
-      relations: { taskStatus: true, downloadResource: true }, 
+    const task = await this.tasksRepository.findOne({
+      relations: { taskStatus: true, downloadResource: true },
       where: { id },
     });
     await this.downloadService.removeFiles(task);
