@@ -100,21 +100,39 @@ const AnimeCultDownloader = () => {
 
     const sibnetSubsEpisode = findSibnetSubs(root);
     if (sibnetSubsEpisode) {
-      await downloadSibnet(sibnetSubsEpisode, task, props);
-      return;
+      try {
+        await downloadSibnet(sibnetSubsEpisode, task, props);
+        return;
+      } catch (e) {
+        logger.warn('sibnetSubs not available');
+      }
+    } else {
+      logger.warn('sibnetSubs not found');
     }
 
     const mikadoxSubsEpisode = findEnglishSubs(root);
 
     if (mikadoxSubsEpisode) {
-      await downloadMikadox(mikadoxSubsEpisode, task, props);
-      return;
+      try {
+        await downloadMikadox(mikadoxSubsEpisode, task, props);
+        return;
+      } catch (e) {
+        logger.warn('mikadox source not available');
+      }
+    } else {
+      logger.warn('mikadox source not found');
     }
 
     const sibnetDubEpisode = findSibnetDub(root);
     if (sibnetDubEpisode) {
-      await downloadSibnet(sibnetDubEpisode, task, props);
-      return;
+      try {
+        await downloadSibnet(sibnetDubEpisode, task, props);
+        return;
+      } catch (e) {
+        console.info('sibnetDub not available');
+      }
+    } else {
+      logger.warn('sibnetDub source not found');
     }
   };
 
