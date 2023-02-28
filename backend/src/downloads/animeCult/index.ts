@@ -54,8 +54,7 @@ const AnimeCultDownloader = () => {
     const [, videoUrl = ''] = videoContent.match(/[\S\s]*?player.src\(\[\{src:\s*?"(.+?)"[\S\s]*/);
 
     if (!videoUrl) {
-      logger.error('Have not found video URL');
-      return;
+      throw new Error('Have not found video URL');
     }
 
     directDownload(`https://video.sibnet.ru${videoUrl}`, task.path, {
@@ -80,8 +79,7 @@ const AnimeCultDownloader = () => {
     const videoUrl = videoContent.match(/createPlayer\("v=([\s\S]*?)\\u0026/)?.[1];
 
     if (!videoUrl) {
-      logger.error('Have not found video URL');
-      return;
+      throw new Error('Have not found video URL');
     }
 
     directDownload(decodeURIComponent(videoUrl), task.path, {
@@ -104,7 +102,7 @@ const AnimeCultDownloader = () => {
         await downloadSibnet(sibnetSubsEpisode, task, props);
         return;
       } catch (e) {
-        logger.warn('sibnetSubs not available');
+        logger.warn('sibnetSubs not available', e);
       }
     } else {
       logger.warn('sibnetSubs not found');
@@ -117,7 +115,7 @@ const AnimeCultDownloader = () => {
         await downloadMikadox(mikadoxSubsEpisode, task, props);
         return;
       } catch (e) {
-        logger.warn('mikadox source not available');
+        logger.warn('mikadox source not available', e);
       }
     } else {
       logger.warn('mikadox source not found');
@@ -129,7 +127,7 @@ const AnimeCultDownloader = () => {
         await downloadSibnet(sibnetDubEpisode, task, props);
         return;
       } catch (e) {
-        console.info('sibnetDub not available');
+        console.info('sibnetDub not available', e);
       }
     } else {
       logger.warn('sibnetDub source not found');
