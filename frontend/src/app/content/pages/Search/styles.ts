@@ -5,14 +5,14 @@ export const SearchContainer = styled(Box)`
   margin-bottom: 50px;
 `;
 
-export const StyledChip = styled(Chip)<{ isSelected?: boolean }>`
+export const StyledChip = styled(Chip)<{ isSelected: boolean }>`
   &.chip-label {
     cursor: pointer;
 		color: white;
-		background: ${({ isSelected, theme }) => (isSelected ? theme?.colors.primary : theme?.colors.bg.inactive)}};
+		background: ${({ isSelected, theme }) => (isSelected ? theme?.colors.primary : theme?.colors.border.santasGray)}};
 
-		:hover {
-			background: ${({ isSelected, theme }) => (isSelected ? theme?.colors.primary : 'rgb(0 0 0 / 30%)')}};	
+		&:hover {
+			background-color: ${({ isSelected, theme }) => (isSelected ? 'blue' : 'green')}};	
 		}	
   }
 `;

@@ -56,11 +56,7 @@ export const HighlightPurple = styled.div`
   }
 `;
 
-interface ILoading {
-  loading?: boolean;
-}
-
-export const ProgressLoader = styled.div<ILoading>`
+export const ProgressLoader = styled.div<{ loading: boolean }>`
   ${({ loading = false }) =>
     loading &&
     `

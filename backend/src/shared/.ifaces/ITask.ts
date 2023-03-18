@@ -13,4 +13,6 @@ export interface ITask {
 	downloaded: number;
 	resource: EResource;
 	taskStatus: ETaskStatus,
+	error?: string;
+	errorTime: number;
 }

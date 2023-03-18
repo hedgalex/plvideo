@@ -26,6 +26,7 @@ export interface IEpisodeProps {
   popularityIncline?: number;
   ratingImdb?: number;
   votedImdb?: number;
+  isProgressShown?: boolean;
 }
 
 export const Episode: React.FC<IEpisodeProps> = ({
@@ -41,11 +42,12 @@ export const Episode: React.FC<IEpisodeProps> = ({
   popularityIncline,
   ratingImdb,
   votedImdb,
+  isProgressShown = false,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [isShowRequested, setShowRequested] = useState<boolean>(false);
-  const { status, changeStatus, size, downloaded } = useProgress(id, {
+  const { status, changeStatus, size, downloaded, error } = useProgress(id, {
     enabled: !!id && isDownloadable,
   });
 
@@ -63,7 +65,7 @@ export const Episode: React.FC<IEpisodeProps> = ({
   };
 
   return (
-    <EpisodeItem loading={isShowRequested}>
+    <EpisodeItem loading={isShowRequested} isProgressShown={isProgressShown} hasImage={!!image}>
       {!isShowRequested && (
         <>
           {image && <ItemImage src={image} />}
@@ -72,8 +74,8 @@ export const Episode: React.FC<IEpisodeProps> = ({
               <Progress status={status} downloaded={downloaded} />
               <Popularity value={popularity} incline={popularityIncline} />
             </StatisticsBlock>
-            <NamesBlock onClick={navigateToShowsPage} allowClick={!isDownloadable} hasImage={!!image}>
-              <Title>{title}</Title>
+            <NamesBlock onClick={navigateToShowsPage} isClickAllowed={!isDownloadable}>
+              <Title hasError={!!error}>{title}</Title>
               <Subtitle>{subtitle}</Subtitle>
             </NamesBlock>
             <RatingBlock>

@@ -3,7 +3,32 @@ import { IGlobalTheme } from '~app/theme';
 import { ETaskStatus } from '~shared/.consts';
 import { ProgressLoader, Spinner } from '~app/styles';
 
-export const EpisodeItem = styled(ProgressLoader)`
+export const ItemImage = styled.img`
+  position: absolute;
+  bottom: -5px;
+  left: 60px;
+  width: 47px;
+  height: 70px;
+  background: #eee;
+  border: 4px solid #eee;
+  border-radius: 10px;
+`;
+
+export const NamesBlock = styled.div<{ isClickAllowed: boolean }>`
+  width: calc(100% - 175px);
+  flex-grow: 1;
+  overflow: hidden;
+  font-size: 16px;
+  cursor: ${({ isClickAllowed }) => (!isClickAllowed ? 'default' : 'pointer')};
+`;
+
+export const ProgressBlock = styled.div`
+  margin-top: 4px;
+  padding-left: 5px;
+  text-align: center;
+`;
+
+export const EpisodeItem = styled(ProgressLoader)<{ isProgressShown: boolean; hasImage: boolean }>`
   position: relative;
   border-radius: 16px;
   padding: 10px;
@@ -14,20 +39,25 @@ export const EpisodeItem = styled(ProgressLoader)`
   }
 
   ${({ loading = false }) => !loading && `background: white;`}
-`;
 
-export const ItemImage = styled.img`
-  position: absolute;
-  bottom: -5px;
-  left: 60px;
-  width: 47px;
-  height: 70px;
-  background: #eee;
-  border: 4px solid #eee;
-  border-radius: 10px;
+  ${ItemImage} {
+    @media only screen and (max-width: 768px) {
+      left: ${({ isProgressShown }) => (isProgressShown ? '40px' : '5px')};
+    }
+  }
 
-  @media only screen and (max-width: 768px) {
-    left: 40px;
+  ${NamesBlock} {
+    margin: 2px 10px 2px ${({ hasImage, isProgressShown }) => (hasImage || isProgressShown ? '73px' : '15px')};
+
+    @media only screen and (max-width: 768px) {
+      margin: 2px 10px 2px ${({ hasImage, isProgressShown }) => (hasImage && isProgressShown ? '55px' : '10px')};
+    }
+  }
+
+  ${ProgressBlock} {
+    @media only screen and (max-width: 768px) {
+      margin-left: ${({ hasImage, isProgressShown }) => (hasImage && isProgressShown ? '-25px' : '2px')};
+    }
   }
 `;
 
@@ -43,22 +73,13 @@ export const StatisticsBlock = styled.div`
   overflow: hidden;
 `;
 
-export const PopularityBlock = styled.div`
-  display: flex;
-  justify-content: center;
-
+export const PopularityBlock = styled.div<{ incline: number }>`
+  text-align: center;
+  padding-top: 12px;
+  font-weight: bold;
+  color: ${({ incline }) => (incline > 0 && 'green') || (incline < 0 && 'red')};
   @media only screen and (max-width: 768px) {
     display: none;
-  }
-`;
-
-export const ProgressBlock = styled.div`
-  margin-top: 4px;
-  padding-left: 5px;
-  text-align: center;
-
-  @media only screen and (max-width: 768px) {
-    margin-left: -13px;
   }
 `;
 
@@ -71,29 +92,11 @@ export const Download = styled.div`
   clip-path: polygon(18% 0%, 88% 0%, 82% 50%, 100% 50%, 50% 100%, 0% 50%, 18% 50%);
 `;
 
-interface IDetailsProps {
-  allowClick: boolean;
-  hasImage: boolean;
-}
-
-export const NamesBlock = styled.div`
-  width: calc(100% - 175px);
-  flex-grow: 1;
-  overflow: hidden;
-  font-size: 16px;
-  cursor: ${({ allowClick }: IGlobalTheme<IDetailsProps>) => (!allowClick ? 'default' : 'pointer')};
-  margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '73px' : '15px')};
-
-  @media only screen and (max-width: 768px) {
-    margin: 2px 10px 2px ${({ hasImage }: IGlobalTheme<IDetailsProps>) => (hasImage ? '50px' : '5px')};
-  }
-`;
-
-export const Title = styled.div`
+export const Title = styled.div<{ hasError: boolean }>`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  color: black;
+  color: ${({ hasError }) => (hasError ? 'red' : 'black')};
   font-weight: 600;
 `;
 

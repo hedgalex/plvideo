@@ -1,7 +1,5 @@
-import { Box } from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { PopularityBlock, RatingIncline } from '../styles';
+import { Tooltip } from '@mui/material';
+import { PopularityBlock } from '../styles';
 
 export interface IPopularityProps {
   value?: number;
@@ -14,27 +12,8 @@ export const Popularity: React.FC<IPopularityProps> = ({ value, incline = 0 }) =
   }
 
   return (
-    <PopularityBlock>
-      <Box pt="10px">{value}</Box>
-      {incline === 0 && <Box width="24px" />}
-      {incline > 0 && (
-        <RatingIncline incline={incline}>
-          <ArrowDropUpIcon />
-          <Box fontSize="12px" fontWeight="bold" mt="-10px">
-            {incline}
-          </Box>
-        </RatingIncline>
-      )}
-      {incline < 0 && (
-        <RatingIncline incline={incline}>
-          <Box fontSize="12px" fontWeight="bold">
-            {-1 * incline}
-          </Box>
-          <Box mt="-8px">
-            <ArrowDropDownIcon />
-          </Box>
-        </RatingIncline>
-      )}
-    </PopularityBlock>
+    <Tooltip title={Math.abs(incline)}>
+      <PopularityBlock incline={incline}>{value}</PopularityBlock>
+    </Tooltip>
   );
 };

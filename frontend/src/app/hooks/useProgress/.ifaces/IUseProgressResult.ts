@@ -9,4 +9,6 @@ export interface IUseProgressResult {
   started: number;
   finished: number;
   resource: EResource;
+  error?: string,
+  errorTime?: number,
 }

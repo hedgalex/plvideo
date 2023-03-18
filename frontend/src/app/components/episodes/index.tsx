@@ -23,7 +23,9 @@ export const Episodes: React.FC<IEpisodesProps> = ({ episodes = [] }) => {
   }, [episodes]);
 
   const { hash = '#' } = useLocation();
-  const { season: urlSeason = seasons[0] ?? 1, episodeGroup: urlEpisodeGroup = 0 } = getHashParams(hash);
+  const { season = '1', episodeGroup = '0' } = getHashParams(hash);
+  const urlSeason = parseInt(season) ?? seasons[0];
+  const urlEpisodeGroup = parseInt(episodeGroup);
 
   const [currentSeason, setCurrentSeason] = useState<number>(urlSeason);
   const [episodeGroupIndex, setEpisodeGroupIndex] = useState<number>(0);

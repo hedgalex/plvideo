@@ -22,6 +22,7 @@ export const Downloads: React.FC = () => {
               image={task.image}
               resources={[task.resource]}
               isDownloadable
+              isProgressShown
             />
           ))}
       </ProgressLoader>

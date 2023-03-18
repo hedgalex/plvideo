@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Stack } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { IState, useAppDispatch } from '~store/index';
 import { searchAction } from '~store/pageSlice';
 import { Input } from '~components/input/styles';
 import { Episode } from '~components/episode';
+import { getHashParams } from '~components/episodes/utils';
 import { EResource, EShowTypes } from '~shared/.consts';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
 import { ProgressLoader } from '~app/styles';
@@ -13,31 +14,38 @@ import { Content, Header } from '~app/content/styles';
 import { SearchContainer, StyledChip } from './styles';
 
 export const SearchPage: React.FC = () => {
-  const location = useLocation();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const hash = decodeURIComponent(location.hash.replace(/#/, ''));
+  const { hash = '#' } = useLocation();
+  const { text = '', source = EResource.IMDB } = getHashParams(decodeURIComponent(hash));
   const [searchText, setSearchText] = useState<string>('');
-  const [activeResource, setActivEResource] = useState<EResource>(EResource.IMDB);
+  const [activeResource, setActiveResource] = useState<EResource>(EResource.IMDB);
 
   const { isLoading, data } = useSelector((state: IState) => state.page);
   const { items = [] } = data as IPageListResult<IShowItem>;
 
   useEffect(() => {
-    setSearchText(hash);
-    if (hash.length > 2) {
-      dispatch(searchAction({ searchText: hash, resource: activeResource }));
+    setSearchText(text);
+    setActiveResource(source as EResource);
+    if (text.length > 2) {
+      dispatch(searchAction({ searchText: text, resource: source as EResource }));
     }
-  }, [hash, activeResource]);
+  }, [text, source]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    navigator(`#${encodeURIComponent(event?.target?.value)}` ?? '');
-  };
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      navigate(`#text=${encodeURIComponent(event?.target?.value ?? '')}&source=${activeResource}`);
+    },
+    [activeResource],
+  );
 
-  const handleChipClick = (name: EResource) => () => {
-    setActivEResource(name);
-  };
+  const handleChipClick = useCallback(
+    (newSource: EResource) => () => {
+      navigate(`#text=${encodeURIComponent(searchText)}&source=${newSource}`);
+    },
+    [searchText],
+  );
 
   return (
     <Content>

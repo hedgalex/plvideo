@@ -7,14 +7,14 @@ export interface ISeason {
   seasonNumber: number;
 }
 
-export const getHashParams = (hash = '#'): Record<string, number> => {
+export const getHashParams = (hash = '#'): Record<string, string> => {
   const result = {};
   const splitted = hash.replace(/#/, '').split(/&/);
 
   splitted.forEach((pair: string) => {
-    const [name, value = '1'] = pair.split(/=/);
+    const [name, value = ''] = pair.split(/=/);
     if (name) {
-      result[name] = parseInt(value);
+      result[name] = value;
     }
   });
   return result;

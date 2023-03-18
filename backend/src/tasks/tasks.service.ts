@@ -48,7 +48,7 @@ export class TasksService {
       return;
     }
 
-    await this.tasksRepository.update({ id: idleTask.id }, { taskStatusId: 2 });
+    await this.tasksRepository.update({ id: idleTask.id }, { taskStatusId: 2, error: '', errorTime: 0 });
     this.logger.log(`Start downloading ${idleTask.url} to ${idleTask.path}`);
 
     const onInit = async (size: number): Promise<void> => {
@@ -73,8 +73,17 @@ export class TasksService {
         await this.tasksRepository.update({ id: idleTask.id }, { downloaded });
       }
     };
-
-    this.downloadService.handleTask(idleTask, { onInit, onProgress });
+    try {
+      this.downloadService.handleTask(idleTask, { onInit, onProgress });
+    } catch (e) {
+      this.tasksRepository.update(
+        { id: idleTask.id },
+        {
+          error: e,
+          errorTime: new Date().getTime(),
+        },
+      );
+    }
   }
 
   @Interval(30000)
@@ -120,6 +129,8 @@ export class TasksService {
           downloaded: task.downloaded,
           resource: task.downloadResource.name as EResource,
           taskStatus: task.taskStatus.name as ETaskStatus,
+          error: task.error,
+          errorTime: task.errorTime,
         };
       }) ?? []
     );

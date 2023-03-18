@@ -44,5 +44,7 @@ export const useProgress = (id: number, { enabled = true }: IUseProgress): IUseP
     resource: task.resource,
     changeStatus,
     status,
+    error: task.error,
+    errorTime: task.errorTime,
   };
 };
