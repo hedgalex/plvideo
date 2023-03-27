@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   ParseEnumPipe,
@@ -63,6 +64,26 @@ export class DetailsController {
     try {
       await this.detailsService.updateShowDetails(resource, id, undefined, !!resource);
       response.status(HttpStatus.CREATED).send(await this.detailsService.getDetails(id));
+    } catch (e) {
+      response.status(HttpStatus.METHOD_NOT_ALLOWED).send(e);
+    }
+  }
+
+  @Delete()
+  async deleteDetails(@Res() response: Response, @Body('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      await this.detailsService.deleteDetails(id);
+      response.status(HttpStatus.ACCEPTED).send();
+    } catch (e) {
+      response.status(HttpStatus.METHOD_NOT_ALLOWED).send(e);
+    }
+  }
+
+  @Post('/type')
+  async changeType(@Res() response: Response, @Body('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      await this.detailsService.changeType(id);
+      response.status(HttpStatus.ACCEPTED).send(await this.detailsService.getDetails(id));
     } catch (e) {
       response.status(HttpStatus.METHOD_NOT_ALLOWED).send(e);
     }

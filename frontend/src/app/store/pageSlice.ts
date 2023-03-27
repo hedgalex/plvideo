@@ -63,6 +63,22 @@ export const addShowAction = createAsyncThunk(
   },
 );
 
+export const updateShowActionChangeType = createAsyncThunk('show/type', async ({ id }: { id: number | string }) => {
+  const { data } = await axios.post('/api/details/type', {
+    id: id?.toString() ?? '0',
+  });
+
+  return data;
+});
+
+export const updateShowActionDelete = createAsyncThunk('show/delete', async ({ id }: { id: number | string }) => {
+  const { data } = await axios.delete('/api/details', {
+    data: { id: id?.toString() ?? '0' },
+  });
+
+  return data;
+});
+
 export const updateShowAction = createAsyncThunk(
   'show/update',
   async ({ id, resource, force }: { id: number | string; resource?: string; force?: boolean }) => {
@@ -133,6 +149,30 @@ const pageSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateShowAction.rejected, (state: IPage, { payload }) => {
+      console.error('Error', payload);
+      state.isLoading = false;
+    });
+
+    builder.addCase(updateShowActionChangeType.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+      state.isLoading = false;
+    });
+    builder.addCase(updateShowActionChangeType.pending, (state: IPage) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateShowActionChangeType.rejected, (state: IPage, { payload }) => {
+      console.error('Error', payload);
+      state.isLoading = false;
+    });
+
+    builder.addCase(updateShowActionDelete.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+      state.isLoading = false;
+    });
+    builder.addCase(updateShowActionDelete.pending, (state: IPage) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateShowActionDelete.rejected, (state: IPage, { payload }) => {
       console.error('Error', payload);
       state.isLoading = false;
     });

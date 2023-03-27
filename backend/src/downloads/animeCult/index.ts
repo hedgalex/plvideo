@@ -25,6 +25,8 @@ const FILTER_ORDER = [
   { name: EResourceName.SIBNET, search: 'sibnet', type: 'subs' },
   { name: EResourceName.MIKADOX, search: 'english', type: 'subs' },
   { name: EResourceName.SIBNET, search: 'sibnet', type: 'dub' },
+  { name: EResourceName.MIKADOX, search: 'english', type: 'many_dub' },
+  { name: EResourceName.MIKADOX, search: 'english', type: 'dub' },
 ] as Resources[];
 
 const AnimeCultDownloader = () => {

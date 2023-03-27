@@ -37,7 +37,6 @@ export const EditableTitle: React.FC<IEditableTitleProps> = ({ title, onChange }
       if (editMode && event.key === 'Escape') {
         handleCancelEditingTitle();
       }
-
       if (editMode && event.key === 'Enter') {
         handleSaveTitle();
       }
@@ -51,7 +50,7 @@ export const EditableTitle: React.FC<IEditableTitleProps> = ({ title, onChange }
     return () => {
       document.removeEventListener('keydown', handleChangeEditMode);
     };
-  }, []);
+  }, [editMode]);
 
   useEffect(() => {
     if (title) {
@@ -60,25 +59,24 @@ export const EditableTitle: React.FC<IEditableTitleProps> = ({ title, onChange }
   }, [title]);
 
   return (
-    <>
+    <Box display="flex" justifyContent="space-between">
       {editMode && (
-        <Box pt="20px">
+        <Header variant="h1">
           <EditTitle className="edit-title" value={titleText} onChange={handleChange} />
+
           <EditButton className="edit-button" color="success" variant="outlined" onClick={handleSaveTitle}>
             <CheckIcon />
           </EditButton>
           <EditButton className="edit-button" color="error" variant="outlined" onClick={handleCancelEditingTitle}>
             <CloseIcon />
           </EditButton>
-        </Box>
+        </Header>
       )}
       {!editMode && (
-        <Box display="flex" justifyContent="space-between">
-          <Header variant="h1" onClick={handleHeaderClick}>
-            {titleText}
-          </Header>
-        </Box>
+        <Header variant="h1" onClick={handleHeaderClick}>
+          {titleText}
+        </Header>
       )}
-    </>
+    </Box>
   );
 };

@@ -274,7 +274,7 @@ export class DetailsService {
     const details = await this.fetchDetails(id, resource, resourceId);
 
     if (!show) {
-      this.showsRepository.insert({
+      await this.showsRepository.insert({
         id,
         title: details.title,
         image: details.image,
@@ -296,7 +296,7 @@ export class DetailsService {
         }),
       });
     } else {
-      this.showsRepository.update(
+      await this.showsRepository.update(
         {
           id: show.id,
         },
@@ -377,6 +377,27 @@ export class DetailsService {
         }
       }
     }
+  }
+
+  async deleteDetails(id: number): Promise<void> {
+    await this.episodesRepository.delete({ showId: id });
+    await this.showsRepository.delete({ id });
+
+    return;
+  }
+
+  async changeType(id: number): Promise<void> {
+    await this.episodesRepository.delete({ showId: id });
+    const show = await this.showsRepository.findOne({ where: { id } });
+    await this.showsRepository.update(
+      {
+        id,
+      },
+      {
+        type: EShowTypes.TVSHOW === show.type ? EShowTypes.MOVIE : EShowTypes.TVSHOW,
+      },
+    );
+    return;
   }
 
   async saveTitle(id: number, title: string): Promise<void> {

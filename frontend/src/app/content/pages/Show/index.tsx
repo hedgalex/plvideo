@@ -1,65 +1,40 @@
 import { Box } from '@mui/material';
-import { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import { IPageShowInfo } from '~shared/.ifaces';
 import { EResource, EShowTypes } from '~shared/.consts';
 import { Episode } from '~components/episode';
 import { Episodes } from '~components/episodes';
-import { IState, useAppDispatch } from '~store/index';
-import { fetchShowAction, saveShowTitleAction, updateShowAction } from '~store/pageSlice';
 import { Content, PageContent } from '~app/content/styles';
-import { UpdateButton } from './components/UpdateButton';
+import { useShow } from '~hooks/useShow';
+import { MoreButton } from './components/MoreButton';
 import { EditableTitle } from './components/EditableHeader';
 import { ImageContainer, ShowContent, ShowDescription, ShowImage, ShowTitle, Year } from './styles';
 
 export const ShowPage: React.FC = () => {
   const { id } = useParams();
+  const { show, isLoading, previewImage, handleTitleUpdate, handleShowDelete, handleShowUpdate, handleShowChangeType } =
+    useShow(id);
 
-  const dispatch = useAppDispatch();
-  const { isLoading, data } = useSelector((state: IState) => state.page);
-  const show = data as IPageShowInfo;
-
-  const handleSaveTitle = useCallback(
-    (title: string) => {
-      if (id) {
-        dispatch(saveShowTitleAction({ id, title }));
-      }
-    },
-    [id],
-  );
-
-  const handleUpdate = useCallback(
-    (resource: EResource) => {
-      if (id) {
-        dispatch(updateShowAction({ id, resource, force: true }));
-      }
-    },
-    [id],
-  );
-
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchShowAction({ id }));
-    }
-  }, [id]);
-
-  //TODO Update picture
   return (
     <Content>
       <ShowTitle loading={isLoading}>
-        <EditableTitle title={show?.title} onChange={handleSaveTitle} />
+        <EditableTitle title={show?.title} onChange={handleTitleUpdate} />
         {!isLoading && (
           <Box mt="25px">
-            <UpdateButton lastUpdate={show.sync} resources={show.resources} onClick={handleUpdate} />
+            <MoreButton
+              lastUpdate={show.sync}
+              resources={show.resources}
+              onDelete={handleShowDelete}
+              onUpdate={handleShowUpdate}
+              onTypeChange={handleShowChangeType}
+            />
           </Box>
         )}
       </ShowTitle>
       <Year loading={isLoading}>{show?.year}</Year>
       <PageContent>
         <ShowContent>
-          <ImageContainer loading={isLoading}>{!isLoading && <ShowImage src={show?.image} alt="" />}</ImageContainer>
+          <ImageContainer loading={isLoading}>{!isLoading && <ShowImage src={previewImage} alt="" />}</ImageContainer>
           <ShowDescription loading={isLoading}>{show?.description}</ShowDescription>
         </ShowContent>
         {!isLoading && (
