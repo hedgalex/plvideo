@@ -1,29 +1,42 @@
-import { useSelector } from 'react-redux';
-import { IState } from '~store/index';
 import { Content, Header } from '~app/content/styles';
-import { Episode } from '~components/episode';
-import { ITask } from '~shared/.ifaces';
+import { IDownload } from '~shared/.ifaces';
+import { useDownloads } from '~hooks/useDownloads';
 import { ProgressLoader } from '~app/styles';
+import { Episode } from '~components/episode';
+import { EShowTypes } from '~shared/.consts';
+import { GroupButton } from './styles';
 
 export const Downloads: React.FC = () => {
-  const { isLoaded, data } = useSelector((state: IState) => state.tasks);
+  const { isLoading, groups, onShowChange } = useDownloads();
   return (
     <Content>
       <Header variant="h1">Downloads</Header>
-      <ProgressLoader loading={!isLoaded}>
-        {isLoaded &&
-          data.map((task: ITask) => (
-            <Episode
-              key={task.id}
-              id={task.id}
-              showId={task.showId}
-              title={task.title}
-              subtitle={task.subtitle}
-              image={task.image}
-              resources={[task.resource]}
-              isDownloadable
-              isProgressShown
-            />
+      <ProgressLoader loading={isLoading}>
+        {!isLoading &&
+          groups?.map((group: IDownload) => (
+            <>
+              {group.type === EShowTypes.TVSHOW && (
+                <GroupButton
+                  isActive={group?.episodes?.length > 0}
+                  onClick={() => {
+                    onShowChange(group?.id);
+                  }}
+                >
+                  {group?.title}
+                  {group.count > 0 && <span> -- {group.count}</span>}
+                </GroupButton>
+              )}
+              {group?.episodes.map((episode) => (
+                <Episode
+                  key={episode.id}
+                  {...episode}
+                  showId={group.id}
+                  image={group?.image}
+                  isDownloadable
+                  isProgressShown
+                />
+              ))}
+            </>
           ))}
       </ProgressLoader>
     </Content>

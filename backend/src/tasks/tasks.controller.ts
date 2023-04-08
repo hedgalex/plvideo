@@ -13,18 +13,23 @@ import {
 import { TasksService } from './tasks.service';
 import { Response } from 'express';
 import { EResource } from '~shared/.consts';
-import { ITask } from '~shared/.ifaces';
+import { IDownload, IPageListResult, ITask } from '~shared/.ifaces';
 
-@Controller('/api/tasks')
+@Controller('/api')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Get()
+  @Get('/downloads')
+  async getDownloads(@Query('showId', ParseIntPipe) showId): Promise<IPageListResult<IDownload>> {
+    return await this.tasksService.getDownloads(showId);
+  }
+
+  @Get('/tasks')
   async getAllTasks(): Promise<ITask[]> {
     return await this.tasksService.getAllTasks();
   }
 
-  @Put()
+  @Put('/tasks')
   async addTask(
     @Res() response: Response,
     @Body('resource', new ParseEnumPipe(EResource)) resource: EResource,
@@ -45,7 +50,7 @@ export class TasksController {
     response.status(HttpStatus.NO_CONTENT).send();
   }
 
-  @Delete()
+  @Delete('/tasks')
   async removeTask(@Res() response: Response, @Query('id', ParseIntPipe) id: number): Promise<void> {
     await this.tasksService.removeTask(id);
     response.status(HttpStatus.NO_CONTENT).send();

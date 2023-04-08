@@ -3,10 +3,6 @@ import { EResource } from '../.consts/EResource';
 
 export interface ITask {
 	id: number;
-	showId: number;
-	title: string;
-	subtitle: string;
-	image: string;
 	started: number;
 	finished: number;
 	size: number;
@@ -14,5 +10,5 @@ export interface ITask {
 	resource: EResource;
 	taskStatus: ETaskStatus,
 	error?: string;
-	errorTime: number;
+	errorTime?: number;
 }

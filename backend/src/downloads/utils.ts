@@ -66,3 +66,7 @@ export const removeFile = async (filepath: string): Promise<void> => {
     logger.error(`Could not remove file ${filepath}`);
   }
 };
+
+export const getFullUrl = (url = '', protocol = 'https'): string => {
+  return url.startsWith('http') ? url : `${protocol}:${url}`;
+};

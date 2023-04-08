@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { Tasks } from '~server/entities/tasks';
 import { configService } from '../config/config.service';
 import { DownloadService } from '../downloads/download.service';
-import { EResource, EShowTypes, ETaskStatus, getFullEpisodeId } from '~shared/.consts';
-import { ITask } from '../shared/.ifaces';
+import { EResource, EShowTypes, ETaskStatus } from '~shared/.consts';
+import { IDownload, IPageListResult, ITask } from '../shared/.ifaces';
 import { Episodes } from '../entities/episodes';
 import { getMovieFilePath, getTVShowFilePath } from '../utils/paths';
 
@@ -103,6 +103,45 @@ export class TasksService {
     }
   }
 
+  async getDownloads(showId: number): Promise<IPageListResult<IDownload>> {
+    const tasks = await this.tasksRepository.find({
+      relations: { taskStatus: true, downloadResource: true, episode: { show: true } },
+      order: { path: 'ASC' },
+    });
+
+    const groups = {};
+
+    tasks?.forEach((task) => {
+      const { episode } = task;
+      const { show } = episode;
+      if (!groups[show.id]) {
+        groups[show.id] = {
+          id: show.id,
+          title: show.title,
+          image: show.image,
+          type: show.type,
+          count: 0,
+          episodes: [],
+        };
+      }
+
+      const group = groups[show.id];
+      const { episodes } = group;
+      group.count += 1;
+      if (showId === show.id || show.type === EShowTypes.MOVIE) {
+        episodes.push({
+          id: task.id,
+          title: episode.episodeTitle(),
+          subtitle: episode.episodeSubtitle(),
+          resources: [task.downloadResource.name as EResource],
+          status: task.taskStatus.name as ETaskStatus,
+        });
+      }
+    });
+
+    return { items: Object.values(groups) };
+  }
+
   async getAllTasks(): Promise<ITask[]> {
     const tasks = await this.tasksRepository.find({
       relations: { taskStatus: true, downloadResource: true, episode: { show: true } },
@@ -111,18 +150,8 @@ export class TasksService {
 
     return (
       tasks?.map((task) => {
-        const { episode } = task;
-        const type = episode?.show?.type;
-
         return {
           id: task.id,
-          showId: episode?.show?.id,
-          title: type === EShowTypes.MOVIE ? episode?.show?.title : episode?.title,
-          subtitle:
-            type === EShowTypes.MOVIE
-              ? `${episode?.show?.year}`
-              : getFullEpisodeId(episode?.season ?? 0, episode?.episode ?? 0),
-          image: episode?.show?.image ?? '',
           started: task.started,
           finished: task.finished,
           size: task.size,

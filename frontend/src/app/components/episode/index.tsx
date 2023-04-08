@@ -57,6 +57,9 @@ export const Episode: React.FC<IEpisodeProps> = ({
   }, [status, resources]);
 
   const navigateToShowsPage = async () => {
+    if (!showId) {
+      return;
+    }
     setShowRequested(true);
     if (resourceShowId) {
       await dispatch(addShowAction({ resource: resources[0], resourceShowId, showId }));

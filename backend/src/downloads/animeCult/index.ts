@@ -3,7 +3,7 @@ import parse, { HTMLElement } from 'node-html-parser';
 import youtubedl from 'youtube-dl-exec';
 import { Logger } from '@nestjs/common';
 import { Tasks } from '~server/entities/tasks';
-import { directDownload, removeFile } from '../utils';
+import { directDownload, getFullUrl, removeFile } from '../utils';
 import { IDownloaderProps } from '../.ifaces/IDownloaderProps';
 import { configService } from '../../config/config.service';
 
@@ -17,6 +17,7 @@ interface Resources {
   name: EResourceName;
   search: string;
   type: string;
+  subSource?: string;
 }
 
 const logger = new Logger('AnimeCultDownloader');
@@ -25,8 +26,8 @@ const FILTER_ORDER = [
   { name: EResourceName.SIBNET, search: 'sibnet', type: 'subs' },
   { name: EResourceName.MIKADOX, search: 'english', type: 'subs' },
   { name: EResourceName.SIBNET, search: 'sibnet', type: 'dub' },
-  { name: EResourceName.MIKADOX, search: 'english', type: 'many_dub' },
   { name: EResourceName.MIKADOX, search: 'english', type: 'dub' },
+  { name: EResourceName.MIKADOX, search: 'english', type: 'many_dub', subSource: 'AniMaunt' },
 ] as Resources[];
 
 const AnimeCultDownloader = () => {
@@ -37,8 +38,9 @@ const AnimeCultDownloader = () => {
         const foundName = item.querySelector('.serial-source-img').getAttribute('src')?.indexOf(resource.search) !== -1;
         const foundType =
           item.querySelector('.serial-translator-img').getAttribute('src')?.indexOf(resource.type) !== -1;
+        const subSource = item.querySelector('.serial-translator-title')?.text;
 
-        return foundName && foundType;
+        return foundName && foundType && subSource === resource.subSource;
       })
       .map((element) => {
         const videoId = element?.querySelector('.serial-video')?.getAttribute('id')?.replace(`video`, '');
@@ -65,9 +67,30 @@ const AnimeCultDownloader = () => {
     });
   };
 
-  const downloadMikadox = async (url: string, task: Tasks, props: IDownloaderProps) => {
-    const { data: videoContent } = await axios.get(url, { timeout: 20000, headers: { 'accept-encoding': '' } });
-    const videoUrl = videoContent.match(/createPlayer\("v=([\s\S]*?)\\u0026/)?.[1];
+  const getMikadoxUrl = (videoContent: string, resource: Resources): string => {
+    switch (resource.subSource) {
+      case 'AniMaunt':
+        const root = parse(videoContent);
+        const script = root.querySelectorAll('script')[1]?.rawText ?? '';
+        return script?.match(/file:"([\s\S]*?)"/)?.[1];
+      // case 'AniStar':
+      //   console.info(videoContent, resource);
+      //   break;
+      // case 'AniLibria.TV':
+      //   console.info(videoContent, resource);
+      //   break;
+      default:
+        return videoContent.match(/createPlayer\("v=([\s\S]*?)\\u0026/)?.[1];
+    }
+  };
+
+  const downloadMikadox = async (url: string, task: Tasks, props: IDownloaderProps, resource: Resources) => {
+    const { data: videoContent } = await axios.get(url, {
+      timeout: 20000,
+      headers: { referer: 'https://z.animecult.org/', 'accept-encoding': '' },
+    });
+
+    const videoUrl = getMikadoxUrl(videoContent, resource);
 
     if (!videoUrl) {
       throw new Error('Have not found video URL');
@@ -112,7 +135,7 @@ const AnimeCultDownloader = () => {
         if (!iframeData) {
           logger.error('Not authorised in AnimeCult');
         }
-        const url = parse(iframeData).getElementsByTagName('iframe')[0].getAttribute('src');
+        const url = getFullUrl(parse(iframeData).getElementsByTagName('iframe')[0].getAttribute('src'));
 
         switch (item.resource.name) {
           case EResourceName.VK:
@@ -122,12 +145,16 @@ const AnimeCultDownloader = () => {
             await downloadSibnet(url, task, props);
             break;
           case EResourceName.MIKADOX:
-            await downloadMikadox(url, task, props);
+            await downloadMikadox(url, task, props, item.resource);
             break;
         }
         break;
       } catch (e) {
-        logger.warn(`Could not able to download using ${item.resource.name}.${item.resource.type}`);
+        logger.warn(
+          `Could not able to download using ${item.resource.name}.${item.resource.type} ${
+            item.resource.subSource ?? ''
+          }`,
+        );
       }
     }
   };

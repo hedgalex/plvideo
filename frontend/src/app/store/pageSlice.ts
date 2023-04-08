@@ -5,6 +5,7 @@ import { EResource, EShowTypes } from '~shared/.consts';
 import { searchResult } from './mocks/shows';
 import { tvShowsList } from './mocks/tvlist';
 import { superNatural } from './mocks/supernatural';
+import { downloads } from './mocks/downloads';
 
 export interface IPage {
   data: IPageContent;
@@ -92,6 +93,14 @@ export const updateShowAction = createAsyncThunk(
   },
 );
 
+export const fetchDownloadsAction = createAsyncThunk(
+  'downloads/fetch',
+  async ({ showId }: { showId: number | string }) => {
+    const { data } = await axios.get('/api/downloads', { params: { showId } });
+    return data;
+  },
+);
+
 const pageSlice = createSlice({
   name: 'page',
   initialState,
@@ -175,6 +184,18 @@ const pageSlice = createSlice({
     builder.addCase(updateShowActionDelete.rejected, (state: IPage, { payload }) => {
       console.error('Error', payload);
       state.isLoading = false;
+    });
+
+    builder.addCase(fetchDownloadsAction.pending, (state: IPage) => {
+      state.isLoading = true;
+    });
+    builder.addCase(fetchDownloadsAction.fulfilled, (state: IPage, { payload }) => {
+      state.data = payload;
+      state.isLoading = false;
+    });
+    builder.addCase(fetchDownloadsAction.rejected, (state: IPage) => {
+      state.isLoading = false;
+      state.data = downloads;
     });
   },
 });

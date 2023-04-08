@@ -5,5 +5,6 @@ import { IPageContent } from './IPageContent';
 import { IPageShowInfo } from './IPageShowInfo';
 import { IEpisode } from './IEpisode';
 import { ITask } from './ITask';
+import { IDownload } from './IDownload';
 
-export { IPageShow, IPageListResult, IShowItem, IPageContent, IPageShowInfo, IEpisode, ITask };
+export { IPageShow, IPageListResult, IShowItem, IPageContent, IPageShowInfo, IEpisode, ITask, IDownload };
