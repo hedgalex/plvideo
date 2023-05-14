@@ -29,9 +29,7 @@ export const useProgress = (id: number, { enabled = true }: IUseProgress): IUseP
     [status],
   );
 
-  const handleAction = useCallback(async () => {
-    
-  }, []);
+  // const handleAction = useCallback(async () => {}, []);
 
   useEffect(() => {
     setStatus(task.taskStatus);

@@ -40,7 +40,7 @@ const AnimeCultDownloader = () => {
           item.querySelector('.serial-translator-img').getAttribute('src')?.indexOf(resource.type) !== -1;
         const subSource = item.querySelector('.serial-translator-title')?.text;
 
-        return foundName && foundType && subSource === resource.subSource;
+        return foundName && foundType && (subSource === resource.subSource || !resource.subSource);
       })
       .map((element) => {
         const videoId = element?.querySelector('.serial-video')?.getAttribute('id')?.replace(`video`, '');
@@ -118,12 +118,14 @@ const AnimeCultDownloader = () => {
   };
 
   const download = async (task: Tasks, props: IDownloaderProps) => {
-    const response = await axios.get(task.url);
+    const response = await axios.get(task.url, {
+      headers: { 'accept-encoding': '' },
+    });
     const { data } = response;
 
     const root = parse(data);
     const items = FILTER_ORDER.map((resource) => filterSources(root, resource)).flat();
-
+    console.info(FILTER_ORDER, items);
     for (const item of items) {
       try {
         const videoCultId = item.videoId;
