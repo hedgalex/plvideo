@@ -29,7 +29,7 @@ class ConfigService {
     return mode != 'DEV';
   }
 
-  public getTypeOrmConfig(): TypeOrmModuleOptions {
+  public getTypeOrmConfig(ignoreMigration = false): TypeOrmModuleOptions {
     return {
       type: 'postgres',
 
@@ -43,7 +43,7 @@ class ConfigService {
 
       migrationsTableName: 'migration',
 
-      migrations: ['src/_migration/*.ts'],
+      migrations: [!ignoreMigration ? 'src/migration/*.ts' : ''],
 
       ssl: this.isProduction(),
     };

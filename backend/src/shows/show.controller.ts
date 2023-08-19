@@ -1,12 +1,12 @@
 import { Controller, Get, ParseIntPipe, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { ShowsService } from './shows.service';
+import { ShowService } from './show.service';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
 import { RECENT_COOKIE_NAME, getRecents } from '../utils/recent';
 
 @Controller('/api')
 export class ShowsController {
-  constructor(private readonly showsService: ShowsService) {}
+  constructor(private readonly showsService: ShowService) {}
 
   @Get('/list')
   async getList(

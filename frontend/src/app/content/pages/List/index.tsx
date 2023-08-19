@@ -1,58 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { IState, useAppDispatch } from '~store/index';
-import { readTopAction } from '~store/pageSlice';
+import { Box } from '@mui/material';
 import { EShowTypes } from '~shared/.consts';
-import { IPageListResult, IShowItem } from '~shared/.ifaces';
-import { Episode } from '~components/episode';
-import { ProgressLoader } from '~app/styles';
+
 import { Content, Header } from '~app/content/styles';
+import { useShowPage } from './useShowPage';
+import { RatingList } from './RatingList';
+import { Spinner } from '~components/Spinner';
 
 interface IListPageProps {
   type: EShowTypes;
 }
 
 export const ListPage: React.FC<IListPageProps> = ({ type }) => {
-  const dispatch = useAppDispatch();
-  const { isLoading, data } = useSelector((state: IState) => state.page);
-  const { items = [] } = data as IPageListResult<IShowItem>;
-
-  const [list, setList] = useState<IShowItem[]>();
-  const [page] = useState<number>(1);
-
-  const headTitle = type === EShowTypes.TVSHOW ? 'Top TV Shows' : 'Top Movies';
-
-  useEffect(() => {
-    setList([...(list ?? []), ...items]);
-  }, [items]);
-
-  useEffect(() => {
-    if (!list) {
-      dispatch(readTopAction({ type, page }));
-    }
-  }, [list, page]);
-
+  const { isLoading, title, items } = useShowPage(type);
   return (
     <Content>
-      <Header variant="h1">{headTitle}</Header>
-      <ProgressLoader loading={isLoading}>
-        {!isLoading &&
-          list?.map((item) => (
-            <Episode
-              key={item.id}
-              id={item.id}
-              showId={item.id}
-              image={item.image}
-              resources={item.resources}
-              title={item.title}
-              subtitle={item.year}
-              popularity={item.popularity}
-              popularityIncline={item.popularityIncline}
-              ratingImdb={item.ratingImdb}
-              votedImdb={item.votedImdb}
-            />
-          ))}
-      </ProgressLoader>
+      <Header variant="h1">{title}</Header>
+      {isLoading && (
+        <Box textAlign="center" marginTop="100px">
+          <Spinner size={60} weight={5} />
+        </Box>
+      )}
+      {!isLoading && <RatingList items={items} />}
     </Content>
   );
 };

@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import { Button, TextField, MenuItem } from '@mui/material';
-import { ProgressLoader } from '~app/styles';
 
-export const Year = styled(ProgressLoader)`
+export const Year = styled.div`
   font-size: 16px;
   width: 50px;
   min-height: 20px;
@@ -18,7 +17,7 @@ export const ShowContent = styled.div`
   margin-top: -15px;
 `;
 
-export const ImageContainer = styled(ProgressLoader)`
+export const ImageContainer = styled.div`
   width: 200px;
   min-height: 250px;
 
@@ -37,7 +36,7 @@ export const ShowImage = styled.img`
   }
 `;
 
-export const ShowDescription = styled(ProgressLoader)`
+export const ShowDescription = styled.div`
   width: 400px;
   margin-left: 50px;
 
@@ -48,7 +47,7 @@ export const ShowDescription = styled(ProgressLoader)`
   }
 `;
 
-export const ShowTitle = styled(ProgressLoader)`
+export const ShowTitle = styled.div`
   display: flex;
   justify-content: space-between;
 `;

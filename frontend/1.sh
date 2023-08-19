@@ -1,0 +1,10 @@
+#/bin/bash
+
+ffmpeg -i The.Justice.League.s01e11.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e11.mp4"
+ffmpeg -i The.Justice.League.s01e12.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e12.mp4"
+ffmpeg -i The.Justice.League.s01e13.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e13.mp4"
+ffmpeg -i The.Justice.League.s01e14.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e14.mp4"
+ffmpeg -i The.Justice.League.s01e15.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e15.mp4"
+ffmpeg -i The.Justice.League.s01e16.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e16.mp4"
+ffmpeg -i The.Justice.League.s01e17.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e17.mp4"
+ffmpeg -i The.Justice.League.s01e18.rus.eng.avi -c:v libx264 -c:a aac -ac 2 -strict experimental -map 0:v -map 0:a:0 -map 0:a:1 -metadata:s:a:0 title="Russian" -metadata:s:a:1 title="English" "The Justice League - s01e18.mp4"

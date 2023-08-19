@@ -18,3 +18,8 @@ export const hashShowId = (name: string, year: number): number => hashCode(`${na
 
 export const hashEpisodeId = (name: string, year: number, season: number, episode: number): number =>
   hashCode(`${name}-${year}-${season}-${episode}`);
+
+export const parseIntOrZero = (value: string | number | undefined): number => {
+  const result = parseInt(String(value), 10);
+  return Number.isNaN(result) ? 0 : result;
+};

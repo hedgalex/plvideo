@@ -2,7 +2,7 @@ import { Content, Header } from '~app/content/styles';
 import { IDownload } from '~shared/.ifaces';
 import { useDownloads } from '~hooks/useDownloads';
 import { ProgressLoader } from '~app/styles';
-import { Episode } from '~components/episode';
+import { Episode } from '~app/components/episode/Episode';
 import { EShowTypes } from '~shared/.consts';
 import { GroupButton } from './styles';
 

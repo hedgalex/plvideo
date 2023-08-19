@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { IState, useAppDispatch } from '~store/index';
 import { readRecentAction } from '~store/pageSlice';
 import { IPageListResult, IShowItem } from '~shared/.ifaces';
-import { Episode } from '~components/episode';
+import { Episode } from '~app/components/episode/Episode';
 import { ProgressLoader } from '~app/styles';
 import { Content, Header } from '~app/content/styles';
 

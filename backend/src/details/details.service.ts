@@ -4,13 +4,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { configService } from '~config/config.service';
 import { IPageShowInfo } from '~shared/.ifaces';
 import { EResource, EShowTypes } from '~shared/.consts';
-import { hashEpisodeId } from '../utils/hash';
+import { hashEpisodeId, parseIntOrZero } from '../utils/hash';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Shows } from '../entities/shows';
 import { Repository } from 'typeorm';
 import { Episodes } from '../entities/episodes';
 import { IDetails } from './.ifaces/IDetails';
 import { IDetailsEpisode } from './.ifaces/IDetailsEpisode';
+import { getTorrentInfo } from 'plvideo-torrent';
 
 const DAY = 24 * 60 * 60 * 1000;
 const DEFAULT_POPULARITY = 999;
@@ -69,30 +70,31 @@ export class DetailsService {
     const episodes = [] as IDetailsEpisode[];
 
     if (type === EShowTypes.TVSHOW) {
-      for await (const season of t?.props?.pageProps?.mainColumnData?.episodes?.seasons ?? []) {
+      for await (const yearItem of t?.props?.pageProps?.mainColumnData?.episodes?.years ?? []) {
         const { data: seasonData } = await axios(
-          `https://www.imdb.com/title/${resourceShowId}/episodes/_ajax?season=${season.number ?? 1}`,
+          `https://www.imdb.com/title/${resourceShowId}/episodes/_ajax?year=${yearItem.year ?? 1}`,
         );
 
         const episodesData = parse(seasonData ?? '');
-
         episodesData.querySelectorAll('div.list_item')?.forEach((episodeItem) => {
           const link = episodeItem.querySelector('.image a');
           const episodeTitle = link.getAttribute('title');
           const divElement = link.querySelector('div');
           const imdbCode = divElement.getAttribute('data-const');
-          const episode = parseInt(divElement.querySelector('div')?.text?.replace(/S\d+?,.Ep(\d+?)/g, '$1') ?? '0');
-          const seasonNumber = parseInt(season.number, 10);
-          const release = new Date(episodeItem.querySelector('.airdate')?.text).getTime();
+          const [, seasonNumber, episodeNumber] = divElement.querySelector('div')?.text?.match(/S(\d+),\sEp(\d+)/);
+          const season = parseIntOrZero(seasonNumber?.[1]);
+          const episode = parseIntOrZero(episodeNumber?.[2]);
+          const releaseTime = episodeItem.querySelector('.airdate')?.text ?? '';
+          const release = releaseTime ? new Date(releaseTime).getTime() : 0;
 
           episodes.push({
-            id: hashEpisodeId(title, year, seasonNumber, episode),
+            id: hashEpisodeId(title, year, season, episode),
             title: episodeTitle,
             showId: id,
             episode,
-            season: seasonNumber,
+            season,
             imdb: imdbCode,
-            release,
+            release: Number.isNaN(release) ? 0 : release,
           });
         });
       }
@@ -103,7 +105,15 @@ export class DetailsService {
       title,
       image,
       imdb: resourceShowId,
-      episodes,
+      episodes: episodes.reduce((accumulator, current) => {
+        const existingObject = accumulator.find(({ id }) => id === current.id);
+
+        if (!existingObject) {
+          accumulator.push(current);
+        }
+
+        return accumulator;
+      }, []),
       resource: EResource.IMDB,
       type,
       description,
@@ -128,7 +138,7 @@ export class DetailsService {
     const items = root.querySelectorAll('a.chapters-item');
     const details = root.querySelectorAll('.serial-info-row');
     const yearDetails = details.find((item) => item.querySelector('.serial-info-value')?.text?.match(/\d{4}/));
-    const year = parseInt(yearDetails?.querySelector('.serial-info-value')?.text ?? '2000', 10);
+    const year = parseIntOrZero(yearDetails?.querySelector('.serial-info-value')?.text ?? '2000');
     const description = root.querySelector('.serial-description')?.text ?? '';
     const typeDetails = details.find((item) => item.querySelector('.badge-success'));
     const type = typeDetails?.querySelector('.badge-success[href*="tv_series"]') ? EShowTypes.TVSHOW : EShowTypes.MOVIE;
@@ -140,7 +150,7 @@ export class DetailsService {
 
       const episodeTitle = item.querySelector('.chapters-title').text;
       const episodeString = item.querySelector('.chapters-number')?.text?.replace(/\D/g, '') ?? '0';
-      const episode = parseInt(episodeString, 10);
+      const episode = parseIntOrZero(episodeString);
 
       episodes.push({
         id: hashEpisodeId(title, year, 1, episode),
@@ -175,7 +185,7 @@ export class DetailsService {
     const root = parse(response?.data ?? '');
     const title = root.querySelector('.show-content__title')?.text.trim();
     const description = root.querySelector('.show-content__description')?.text.trim();
-    const year = parseInt(root.querySelector('#year')?.text.replace(/\D*/g, '') ?? '0', 10);
+    const year = parseIntOrZero(root.querySelector('#year')?.text.replace(/\D*/g, ''));
     const image = root.querySelector('#poster')?.getAttribute('src') ?? '';
     const type = ororoId?.startsWith('/shows') ? EShowTypes.TVSHOW : EShowTypes.MOVIE;
     const episodes =
@@ -184,8 +194,8 @@ export class DetailsService {
         const episodeTitle = link?.text.trim() ?? '';
         const [seasonString = '0', episodeString = '0'] = link?.getAttribute('href')?.replace(/#/, '').split('-');
         const resourceEpisodeId = link?.getAttribute('data-id');
-        const season = parseInt(seasonString, 10);
-        const episode = parseInt(episodeString, 10);
+        const season = parseIntOrZero(seasonString);
+        const episode = parseIntOrZero(episodeString);
         return {
           id: hashEpisodeId(title, year, season, episode),
           title: episodeTitle,
@@ -210,13 +220,17 @@ export class DetailsService {
     };
   }
 
+  async getDetailsTorrent(): Promise<void> {
+    const magnet =
+      'magnet:?xt=urn:btih:556BE0BD40C4880E29BA567663C65BD8BAE9FBEB&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.breizh.pm%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.com%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&dn=%5Bbitsearch.to%5D+Inside+Out+(2015)+%5B1080p%5D';
+    const path = '/Users/alex/Projects/plvideo/downloads';
+
+    const result = await getTorrentInfo(magnet, path);
+    console.info(result);
+  }
+
   async getDetails(showId: number): Promise<IPageShowInfo> {
-    const {
-      ororo: showOroro,
-      imdb: showImdb,
-      ac: showAc,
-      ...show
-    } = await this.showsRepository.findOne({
+    const show = await this.showsRepository.findOne({
       where: { id: showId },
       relations: {
         episodes: true,
@@ -228,9 +242,13 @@ export class DetailsService {
       },
     });
 
+    if (!show) {
+      return null;
+    }
+
     return {
       ...show,
-      resources: [showOroro && EResource.ORORO, showAc && EResource.AC, showImdb && EResource.IMDB].filter(
+      resources: [show.ororo && EResource.ORORO, show.ac && EResource.AC, show.imdb && EResource.IMDB].filter(
         (item) => item,
       ),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

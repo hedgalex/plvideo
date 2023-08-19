@@ -8,19 +8,21 @@ import { TasksModule } from './tasks/tasks.module';
 import { SearchModule } from './search/search.module';
 import { SyncModule } from './sync/sync.module';
 import { DetailsModule } from './details/details.module';
-import { ShowsModule } from './shows/shows.module';
+import { ShowsModule } from './shows/show.module';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     SyncModule,
     TasksModule,
-    TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
+    TypeOrmModule.forRoot(configService.getTypeOrmConfig(true)),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'build'),
     }),
     SearchModule,
     DetailsModule,
+    CardModule,
     ShowsModule,
   ],
 })

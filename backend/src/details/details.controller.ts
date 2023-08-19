@@ -39,6 +39,12 @@ export class DetailsController {
     return;
   }
 
+  @Get('/torrent')
+  async getDetailsByShowId(): Promise<void> {
+    this.detailsService.getDetailsTorrent();
+    return;
+  }
+
   @Post('/add')
   async addDetails(
     @Res() response: Response,

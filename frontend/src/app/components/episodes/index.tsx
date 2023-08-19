@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EResource, getFullEpisodeId } from '~shared/.consts';
 import { IEpisode } from '~shared/.ifaces';
-import { Episode } from '../episode';
+import { Episode } from '../episode/Episode';
 import { Seasons } from './Seasons';
 import { getEpisodeGroups, getHashParams, groupSeasons, NUMBER_EPISODES_IN_LIST } from './utils';
 import { Container } from './styles';

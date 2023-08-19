@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 import { EResource, EShowTypes } from '~shared/.consts';
-import { Episode } from '~components/episode';
+import { Episode } from '~app/components/episode/Episode';
 import { Episodes } from '~components/episodes';
 import { Content, PageContent } from '~app/content/styles';
 import { useShow } from '~hooks/useShow';
@@ -17,7 +17,7 @@ export const ShowPage: React.FC = () => {
 
   return (
     <Content>
-      <ShowTitle loading={isLoading}>
+      <ShowTitle>
         <EditableTitle title={show?.title} onChange={handleTitleUpdate} />
         {!isLoading && (
           <Box mt="25px">
@@ -31,11 +31,11 @@ export const ShowPage: React.FC = () => {
           </Box>
         )}
       </ShowTitle>
-      <Year loading={isLoading}>{show?.year}</Year>
+      <Year>{show?.year}</Year>
       <PageContent>
         <ShowContent>
-          <ImageContainer loading={isLoading}>{!isLoading && <ShowImage src={previewImage} alt="" />}</ImageContainer>
-          <ShowDescription loading={isLoading}>{show?.description}</ShowDescription>
+          <ImageContainer>{!isLoading && <ShowImage src={previewImage} alt="" />}</ImageContainer>
+          <ShowDescription>{show?.description}</ShowDescription>
         </ShowContent>
         {!isLoading && (
           <Box pt="20px">

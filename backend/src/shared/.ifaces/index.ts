@@ -6,5 +6,24 @@ import { IPageShowInfo } from './IPageShowInfo';
 import { IEpisode } from './IEpisode';
 import { ITask } from './ITask';
 import { IDownload } from './IDownload';
+import { ISearchItem } from './ISearchItem';
+import { ISources } from './ISources';
+import { ISourceItem } from './ISourceItem';
+import { ISourceContentItem } from './ISourceContentItem';
+import { ISearchResultItem } from './ISearchResultItem';
 
-export { IPageShow, IPageListResult, IShowItem, IPageContent, IPageShowInfo, IEpisode, ITask, IDownload };
+export { 
+	IPageShow, 
+	IPageListResult, 
+	IShowItem, 
+	IPageContent, 
+	IPageShowInfo, 
+	IEpisode, 
+	ITask, 
+	IDownload, 
+	ISearchItem, 
+	ISources, 
+	ISourceItem, 
+	ISourceContentItem,
+	ISearchResultItem,
+};

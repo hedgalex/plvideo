@@ -1,32 +1,18 @@
-import { Controller, Get, ParseEnumPipe, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SearchService } from './search.service';
-import { EResource } from '~shared/.consts';
-import { IPageListResult, IShowItem } from '~shared/.ifaces';
+import { IPageListResult, ISearchItem, IShowItem } from '~shared/.ifaces';
+import { ShowService } from '../shows/show.service';
 
 @Controller('/api/search')
 export class SearchController {
-  constructor(private readonly searchService: SearchService) {}
+  constructor(private readonly searchService: SearchService, private readonly showsService: ShowService) {}
 
   @Get()
-  async searchImdb(
-    @Query('searchText') text: string,
-    @Query('resource', new ParseEnumPipe(EResource)) resource: EResource,
-  ): Promise<IPageListResult<IShowItem>> {
-    switch (resource) {
-      case EResource.IMDB: {
-        const items = await this.searchService.searchImdb(text);
-        return { items };
-      }
-      case EResource.ORORO: {
-        const items = await this.searchService.searchOroro(text);
-        return { items };
-      }
-      case EResource.AC: {
-        const items = await this.searchService.searchAnimecult(text);
-        return { items };
-      }
-      default:
-        return { items: [] };
-    }
+  async search(@Query('searchText') text: string): Promise<IPageListResult<IShowItem | ISearchItem>> {
+    const searchResult = await this.searchService.search(text);
+    const ids = await this.showsService.addOrUpdate(searchResult, ['popularity']);
+    const items = await this.showsService.getListByIds(ids);
+
+    return { items };
   }
 }

@@ -1,6 +1,7 @@
 import { Box, Typography, typographyClasses } from '@mui/material';
 
 import styled from 'styled-components';
+import { GlobalTheme } from '../theme';
 
 export const Container = styled.div`
   display: flex;
@@ -9,7 +10,6 @@ export const Container = styled.div`
   min-height: 600px;
   margin: 50px auto;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 20px #c0c0c0;
 
   @media only screen and (max-width: 768px) {
@@ -22,13 +22,15 @@ export const Container = styled.div`
   }
 `;
 
-export const Nav = styled.div`
+export const Nav = styled.div(
+  ({ theme }: GlobalTheme) => `
   width: 300px;
   padding: 20px;
   box-sizing: border-box;
   border-radius: 20px 0 0 20px;
   border-right: 1px solid #e9e9ec;
   outline-right: 1px solid #fafbfc;
+  background: ${theme?.colors.palette.secondary_100};
 
   @media only screen and (max-width: 768px) {
     padding: 0;
@@ -39,7 +41,8 @@ export const Nav = styled.div`
     outline-right: 0px;
     margin: 0 auto;
   }
-`;
+`,
+);
 
 export const NavItem = styled.a`
   display: flex;
@@ -87,19 +90,22 @@ export const Logo = styled.div`
   }
 `;
 
-export const Content = styled.div`
+export const Content = styled.div(
+  ({ theme }: GlobalTheme) => `
   max-width: 900px;
   flex-grow: 1;
   padding: 40px;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
+  background: ${theme?.colors.palette.secondary_50};
 
   @media only screen and (max-width: 768px) {
     border: 0;
     padding: 5px;
     max-width: 100%;
   }
-`;
+`,
+);
 
 export const Header = styled(Typography)`
   padding-top: 20px;

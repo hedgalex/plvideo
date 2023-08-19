@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IPageContent, IPageShowInfo } from '~shared/.ifaces';
-import { EResource, EShowTypes } from '~shared/.consts';
+import { EShowTypes } from '~shared/.consts';
 import { searchResult } from './mocks/shows';
 import { tvShowsList } from './mocks/tvlist';
 import { superNatural } from './mocks/supernatural';
@@ -17,13 +17,10 @@ const initialState = {
   isLoading: false,
 } as IPage;
 
-export const searchAction = createAsyncThunk(
-  'search/fetch',
-  async ({ searchText, resource }: { searchText: string; resource: EResource }) => {
-    const { data } = await axios.get(`/api/search`, { params: { searchText, resource } });
-    return data;
-  },
-);
+export const searchAction = createAsyncThunk('search/fetch', async ({ searchText }: { searchText: string }) => {
+  const { data } = await axios.get(`/api/search`, { params: { searchText } });
+  return data;
+});
 
 export const readTopAction = createAsyncThunk(
   'list/fetch',
@@ -179,6 +176,7 @@ const pageSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateShowActionDelete.pending, (state: IPage) => {
+      console.info(1);
       state.isLoading = true;
     });
     builder.addCase(updateShowActionDelete.rejected, (state: IPage, { payload }) => {
@@ -187,6 +185,7 @@ const pageSlice = createSlice({
     });
 
     builder.addCase(fetchDownloadsAction.pending, (state: IPage) => {
+      console.info(1);
       state.isLoading = true;
     });
     builder.addCase(fetchDownloadsAction.fulfilled, (state: IPage, { payload }) => {

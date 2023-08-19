@@ -1,0 +1,20 @@
+{
+  "name": "plvideo-torrent",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Alex Sheff",
+  "license": "MIT",
+  "private": true,
+  "main": "./index.js",
+  "types": "./types/index.d.ts",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "dependencies": {
+    "memory-cache": "^0.2.0",
+    "webtorrent": "2.1.16"
+  },
+  "devDependencies": {
+    "@types/webtorrent": "0.109.3"
+  }
+}

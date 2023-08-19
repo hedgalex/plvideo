@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { IGlobalTheme } from '~app/theme';
+import { IGlobalTheme } from '~app/_theme';
 import { ETaskStatus } from '~shared/.consts';
-import { ProgressLoader, Spinner } from '~app/styles';
+import { ProgressLoader } from '~app/styles';
+import { Spinner } from '../Spinner';
 
 export const ItemImage = styled.img`
   position: absolute;

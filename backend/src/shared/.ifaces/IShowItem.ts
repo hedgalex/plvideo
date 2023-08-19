@@ -1,4 +1,5 @@
 import  { EResource, EShowTypes } from '~shared/.consts';
+import  { ISources } from './ISources';
 
 export interface IShowItem {
   id: number;

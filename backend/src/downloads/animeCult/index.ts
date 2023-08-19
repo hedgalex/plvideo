@@ -1,6 +1,5 @@
 import axios from 'axios';
 import parse, { HTMLElement } from 'node-html-parser';
-import youtubedl from 'youtube-dl-exec';
 import { Logger } from '@nestjs/common';
 import { Tasks } from '~server/entities/tasks';
 import { directDownload, getFullUrl, removeFile } from '../utils';
@@ -104,19 +103,6 @@ const AnimeCultDownloader = () => {
     });
   };
 
-  const downloadVK = async (url: string, task: Tasks, props: IDownloaderProps) => {
-    console.info(url, task, props);
-    const data = await youtubedl('https://www.youtube.com/watch?v=6xKWiCMKKJg', {
-      dumpSingleJson: true,
-      noCheckCertificates: true,
-      noWarnings: true,
-      preferFreeFormats: true,
-      addHeader: ['referer:youtube.com', 'user-agent:googlebot'],
-    });
-
-    console.info('vk output', data);
-  };
-
   const download = async (task: Tasks, props: IDownloaderProps) => {
     const response = await axios.get(task.url, {
       headers: { 'accept-encoding': '' },
@@ -125,7 +111,7 @@ const AnimeCultDownloader = () => {
 
     const root = parse(data);
     const items = FILTER_ORDER.map((resource) => filterSources(root, resource)).flat();
-    console.info(FILTER_ORDER, items);
+
     for (const item of items) {
       try {
         const videoCultId = item.videoId;
@@ -141,7 +127,8 @@ const AnimeCultDownloader = () => {
 
         switch (item.resource.name) {
           case EResourceName.VK:
-            await downloadVK(url, task, props);
+            // await downloadVK(url, task, props);
+            // do nothing
             break;
           case EResourceName.SIBNET:
             await downloadSibnet(url, task, props);
