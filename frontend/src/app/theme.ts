@@ -31,6 +31,7 @@ const colors = {
   secondary_dark: '#989ca1',
 
   white: '#ffffff',
+  black: '#000000',
 
   bright_gray: '#E6EAF3',
   athensGray: '#F5F6F9',

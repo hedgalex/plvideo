@@ -10,10 +10,12 @@ import { SyncModule } from './sync/sync.module';
 import { DetailsModule } from './details/details.module';
 import { ShowsModule } from './shows/show.module';
 import { CardModule } from './card/card.module';
+import { SourcesModule } from './sources/sources.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    SourcesModule,
     SyncModule,
     TasksModule,
     TypeOrmModule.forRoot(configService.getTypeOrmConfig(true)),

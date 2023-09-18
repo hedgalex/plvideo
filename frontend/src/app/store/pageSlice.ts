@@ -36,7 +36,7 @@ export const readRecentAction = createAsyncThunk('list/recent', async () => {
 });
 
 export const fetchShowAction = createAsyncThunk('show/fetch', async ({ id }: { id: number | string }) => {
-  const { data } = await axios.get('/api/details', { params: { id } });
+  const { data } = await axios.get('/api/show', { params: { id } });
   return data;
 });
 

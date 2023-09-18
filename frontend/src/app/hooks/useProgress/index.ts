@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { EResource, ETaskStatus } from '~shared/.consts';
+import { EResource, EStatus } from '~shared/.consts';
 import { useAppDispatch } from '~store/index';
 import { addTaskAction, removeTaskAction } from '~store/tasksSlice';
 import { IUseProgress } from './.ifaces/IUseProgress';
@@ -9,21 +9,21 @@ import { useTaskSelector } from './.consts';
 export const useProgress = (id: number, { enabled = true }: IUseProgress): IUseProgressResult => {
   const dispatch = useAppDispatch();
   const task = useTaskSelector(id, { enabled });
-  const [status, setStatus] = useState<ETaskStatus>(task.taskStatus);
+  const [status, setStatus] = useState<EStatus>(task.taskStatus);
 
   const changeStatus = useCallback(
     async (resource?: EResource) => {
-      if (status === ETaskStatus.BUSY || !id || !resource) {
+      if (status === EStatus.BUSY || !id || !resource) {
         return;
       }
-      if (status === ETaskStatus.NONE) {
+      if (status === EStatus.NONE) {
         dispatch(addTaskAction({ id, resource }));
-        setStatus(ETaskStatus.BUSY);
+        setStatus(EStatus.BUSY);
       }
 
-      if ([ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(status)) {
+      if ([EStatus.IN_PROGRESS, EStatus.READY].includes(status)) {
         await dispatch(removeTaskAction({ id }));
-        setStatus(ETaskStatus.NONE);
+        setStatus(EStatus.NONE);
       }
     },
     [status],

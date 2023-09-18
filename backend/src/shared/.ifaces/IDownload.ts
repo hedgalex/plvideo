@@ -1,11 +1,11 @@
-import { EResource, EShowTypes, ETaskStatus } from '../.consts';
+import { EResource, EShowTypes, EStatus } from '../.consts';
 import { IEpisode } from './IEpisode';
 
 interface IDownloadEpisode {
 	id: number;
 	title: string;
 	subtitle: string;
-	status: ETaskStatus;
+	status: EStatus;
 	resources: EResource[];
 };
 

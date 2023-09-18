@@ -80,8 +80,6 @@ export class Initial1669291250261 implements MigrationInterface {
             id bigint NOT NULL DEFAULT 0,
             show_id bigint NOT NULL DEFAULT 0,
             imdb character varying(30),
-            ororo character varying(100),
-            ac character varying(100),
             episode smallint NOT NULL DEFAULT 0,
             season smallint NOT NULL DEFAULT 0,
             release bigint NOT NULL DEFAULT 0,
@@ -104,8 +102,6 @@ export class Initial1669291250261 implements MigrationInterface {
             image character varying(500),
             description text,
             imdb character varying(30),
-            ororo character varying(100),
-            ac character varying(100),
             sync bigint NOT NULL DEFAULT 0,
             CONSTRAINT shows_pkey PRIMARY KEY (id)
         )

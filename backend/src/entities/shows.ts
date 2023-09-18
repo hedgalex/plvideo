@@ -51,11 +51,5 @@ export class Shows extends BaseEntity {
   imdb: string;
 
   @Column()
-  ororo: string;
-
-  @Column()
-  ac: string;
-
-  @Column()
   sync: number;
 }

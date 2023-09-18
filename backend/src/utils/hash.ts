@@ -16,6 +16,8 @@ export const hashCode = (str = '', seed = 0): number => {
 
 export const hashShowId = (name: string, year: number): number => hashCode(`${name}-${year}`);
 
+export const hash = (...args: (string | number)[]): number => hashCode(args.join('-'));
+
 export const hashEpisodeId = (name: string, year: number, season: number, episode: number): number =>
   hashCode(`${name}-${year}-${season}-${episode}`);
 

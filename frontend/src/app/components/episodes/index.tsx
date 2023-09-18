@@ -67,7 +67,6 @@ export const Episodes: React.FC<IEpisodesProps> = ({ episodes = [] }) => {
           title={episode.title ?? `Episode ${episode.episode}`}
           subtitle={getFullEpisodeId(episode.season, episode.episode)}
           resources={episode.resources}
-          isDownloadable={episode.resources.includes(EResource.ORORO) || episode.resources.includes(EResource.AC)}
         />
       ))}
     </Container>

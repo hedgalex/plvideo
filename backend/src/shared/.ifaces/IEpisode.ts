@@ -5,6 +5,6 @@ export interface IEpisode {
 	title: string;
 	season: number;
 	episode: number;
-	resources: EResource[];
+	resources?: EResource[];
 	release: number;
 }

@@ -31,15 +31,6 @@ export class Episodes extends BaseEntity {
   @Column()
   release: number;
 
-  @Column()
-  imdb: string;
-
-  @Column()
-  ororo: string;
-
-  @Column()
-  ac: string;
-
   episodeTitle = () => {
     const { show } = this;
     return show?.type === EShowTypes.MOVIE ? show?.title : this.title;

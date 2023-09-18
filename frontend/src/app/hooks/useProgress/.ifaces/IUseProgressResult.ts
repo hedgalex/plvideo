@@ -1,9 +1,9 @@
 import { ITask } from '~shared/.ifaces';
-import { EResource, ETaskStatus } from '~shared/.consts';
+import { EResource, EStatus } from '~shared/.consts';
 
 export interface IUseProgressResult {
   changeStatus: (resource?: EResource) => void;
-  status: ETaskStatus;
+  status: EStatus;
   size: number;
   downloaded: number;
   started: number;

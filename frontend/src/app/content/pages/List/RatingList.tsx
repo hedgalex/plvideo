@@ -1,11 +1,12 @@
-import { CardList } from '~components/CardList';
+import { ShowCardList } from '~app/components/ShowCardList';
 import { IShowItem } from '~shared/.ifaces';
-import { ShowCard } from '~components/ShowCard';
+import { ShowCard } from '~app/components/ShowCard';
 
 interface SearchResultProps {
   items: IShowItem[];
+  onTitleClick?: (id: number) => void;
 }
 
-export const RatingList: React.FC<SearchResultProps> = ({ items }) => {
-  return <CardList items={items} ItemComponent={ShowCard} />;
+export const RatingList: React.FC<SearchResultProps> = ({ items, onTitleClick }) => {
+  return <ShowCardList items={items} ItemComponent={ShowCard} onTitleClick={onTitleClick} />;
 };

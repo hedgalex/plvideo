@@ -1,6 +1,7 @@
 import { EShowTypes } from './EShowTypes';
 import { EResource } from './EResource';
-import { ETaskStatus } from './ETaskStatus';
+import { EStatus } from './EStatus';
+import { EFileTypes } from './EFileTypes';
 
 export const getSeason = (season: number | string): string => {
   const seasonName = String(season).length === 1 ? `0${season}` : season;
@@ -13,4 +14,4 @@ export const getFullEpisodeId = (season: number | string, episode: number | stri
   return `s${seasonName}e${episodeName}`;
 };
 
-export { EShowTypes, EResource, ETaskStatus };
+export { EShowTypes, EResource, EStatus, EFileTypes };

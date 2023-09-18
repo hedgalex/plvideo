@@ -5,6 +5,8 @@ export const getRecents = (oldList: string): number[] => {
   return splittedIds.map((item) => Number.parseInt(item));
 };
 
+export const addShowToRecent = (id: number): void => {};
+
 export const addRecent = (id: number, oldList: string): string => {
   const recentIds = getRecents(oldList);
 

@@ -22,6 +22,13 @@ function hashCode(str, seed) {
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 };
 
-module.exports = {
-	hashCode
+/**
+ * Generate cyrb53 hash from strings
+ * @param {string[]} args Arguments to generate the hash
+ * @returns {number}
+ */
+function hash(...args) {
+  return hashCode(args.join('-'));
 };
+
+module.exports = hash;

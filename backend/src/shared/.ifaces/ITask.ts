@@ -1,4 +1,4 @@
-import { ETaskStatus } from '../.consts/ETaskStatus';
+import { EStatus } from '../.consts/EStatus';
 import { EResource } from '../.consts/EResource';
 
 export interface ITask {
@@ -8,7 +8,7 @@ export interface ITask {
 	size: number;
 	downloaded: number;
 	resource: EResource;
-	taskStatus: ETaskStatus,
+	taskStatus: EStatus,
 	error?: string;
 	errorTime?: number;
 }

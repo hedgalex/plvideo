@@ -1,29 +1,29 @@
 import { IPageShow } from './IPageShow';
-import { IPageListResult } from './IPageListResult';
+import { IListResult } from './IListResult';
 import { IShowItem } from './IShowItem';
 import { IPageContent } from './IPageContent';
 import { IPageShowInfo } from './IPageShowInfo';
 import { IEpisode } from './IEpisode';
 import { ITask } from './ITask';
 import { IDownload } from './IDownload';
-import { ISearchItem } from './ISearchItem';
 import { ISources } from './ISources';
 import { ISourceItem } from './ISourceItem';
-import { ISourceContentItem } from './ISourceContentItem';
+import { SourceContentItem } from './SourceContentItem';
 import { ISearchResultItem } from './ISearchResultItem';
+import { ShowFiltered } from './IShowFiltered';
 
 export { 
 	IPageShow, 
-	IPageListResult, 
+	IListResult, 
 	IShowItem, 
 	IPageContent, 
 	IPageShowInfo, 
 	IEpisode, 
 	ITask, 
-	IDownload, 
-	ISearchItem, 
+	IDownload,
 	ISources, 
 	ISourceItem, 
-	ISourceContentItem,
+	SourceContentItem,
 	ISearchResultItem,
+	ShowFiltered,
 };

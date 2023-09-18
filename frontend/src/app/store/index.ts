@@ -4,11 +4,13 @@ import { useDispatch } from 'react-redux';
 import pageReducer, { IPage } from './pageSlice';
 import tasksReducer, { ITasks } from './tasksSlice';
 import showReducer, { IShow } from './showSlice';
+import errorReducer, { IError } from './errorSlice';
 
 export interface IState {
   page: IPage;
   tasks: ITasks;
   show: IShow;
+  errors: IError;
 }
 
 export const store = configureStore({
@@ -16,6 +18,7 @@ export const store = configureStore({
     page: pageReducer,
     tasks: tasksReducer,
     show: showReducer,
+    errors: errorReducer,
   },
   middleware: (getDefaultMiddleware: CurriedGetDefaultMiddleware<unknown>) =>
     getDefaultMiddleware({

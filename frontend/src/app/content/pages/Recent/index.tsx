@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { IState, useAppDispatch } from '~store/index';
 import { readRecentAction } from '~store/pageSlice';
-import { IPageListResult, IShowItem } from '~shared/.ifaces';
+import { IListResult, IShowItem } from '~shared/.ifaces';
 import { Episode } from '~app/components/episode/Episode';
 import { ProgressLoader } from '~app/styles';
 import { Content, Header } from '~app/content/styles';
@@ -10,7 +10,7 @@ import { Content, Header } from '~app/content/styles';
 export const Recent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isLoading, data } = useSelector((state: IState) => state.page);
-  const { items = [] } = data as IPageListResult<IShowItem>;
+  const { items = [] } = data as IListResult<IShowItem>;
   const [list, setList] = useState<IShowItem[]>();
 
   useEffect(() => {

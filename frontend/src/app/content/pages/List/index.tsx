@@ -11,7 +11,7 @@ interface IListPageProps {
 }
 
 export const ListPage: React.FC<IListPageProps> = ({ type }) => {
-  const { isLoading, title, items } = useShowPage(type);
+  const { isLoading, title, items, handleTitleClick } = useShowPage(type);
   return (
     <Content>
       <Header variant="h1">{title}</Header>
@@ -20,7 +20,7 @@ export const ListPage: React.FC<IListPageProps> = ({ type }) => {
           <Spinner size={60} weight={5} />
         </Box>
       )}
-      {!isLoading && <RatingList items={items} />}
+      {!isLoading && <RatingList items={items} onTitleClick={handleTitleClick} />}
     </Content>
   );
 };

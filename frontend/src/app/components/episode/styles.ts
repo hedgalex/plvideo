@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { IGlobalTheme } from '~app/_theme';
-import { ETaskStatus } from '~shared/.consts';
+import { EStatus } from '~shared/.consts';
 import { ProgressLoader } from '~app/styles';
 import { Spinner } from '../Spinner';
 
@@ -118,10 +118,10 @@ export const Action = styled.div`
   cursor: pointer;
 
   :hover {
-    border-color: ${({ status }: IGlobalTheme<{ status: ETaskStatus }>) =>
-      status === ETaskStatus.IDLE || status === ETaskStatus.NONE ? '#4756ea' : 'red'};
-    color: ${({ status }: IGlobalTheme<{ status: ETaskStatus }>) =>
-      status === ETaskStatus.IDLE || status === ETaskStatus.NONE ? '#4756ea' : 'red'};
+    border-color: ${({ status }: IGlobalTheme<{ status: EStatus }>) =>
+      status === EStatus.IDLE || status === EStatus.NONE ? '#4756ea' : 'red'};
+    color: ${({ status }: IGlobalTheme<{ status: EStatus }>) =>
+      status === EStatus.IDLE || status === EStatus.NONE ? '#4756ea' : 'red'};
   }
 
   @media only screen and (max-width: 768px) {

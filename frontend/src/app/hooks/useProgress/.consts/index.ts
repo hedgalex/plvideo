@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { EResource, ETaskStatus } from '~shared/.consts';
+import { EResource, EStatus } from '~shared/.consts';
 import { IState } from '~store/index';
 import { ITask } from '~shared/.ifaces';
 
@@ -11,7 +11,7 @@ const defaultTask = {
   size: 0,
   downloaded: 0,
   resource: EResource.IMDB,
-  taskStatus: ETaskStatus.NONE,
+  taskStatus: EStatus.NONE,
   title: '',
   subtitle: '',
   image: '',

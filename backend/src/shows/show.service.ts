@@ -1,23 +1,27 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Shows } from '../entities/shows';
 import { In, Repository } from 'typeorm';
+import { Shows } from '~entities/shows';
+import { Episodes } from '~entities/episodes';
 import { EResource, EShowTypes } from '~shared/.consts';
-import { IPageListResult, ISearchResultItem, IShowItem } from '~shared/.ifaces';
-import { Episodes } from '../entities/episodes';
+import { IListResult, ISearchResultItem, IShowItem, ShowFiltered } from '~shared/.ifaces';
+import { ImdbService } from '../sources/services/imdb.service';
 
 const PER_PAGE = 50;
+const DAY = 1000 * 60 * 60 * 24;
 
 @Injectable()
 export class ShowService {
   constructor(
+    private readonly imdbService: ImdbService,
     @InjectRepository(Shows)
     private showRepository: Repository<Shows>,
-    @InjectRepository(Shows)
+    @InjectRepository(Episodes)
     private episodeRepository: Repository<Episodes>,
   ) {}
 
-  async getList(type: EShowTypes, page: number): Promise<IPageListResult<IShowItem>> {
+  async getList(type: EShowTypes, page: number): Promise<IListResult<IShowItem>> {
     const items = await this.showRepository.find({
       where: { type },
       skip: (page - 1) * PER_PAGE,
@@ -26,22 +30,22 @@ export class ShowService {
     });
 
     return {
-      items: items.map(({ ororo, ac, imdb, ...item }: Shows) => ({
+      items: items.map(({ imdb, ...item }: Shows) => ({
         ...item,
-        resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
+        resources: [imdb && EResource.IMDB].filter((item) => item),
       })),
       page,
       count: 0,
     };
   }
 
-  async getRecent(recentIds: number[]): Promise<IPageListResult<IShowItem>> {
+  async getRecent(recentIds: number[]): Promise<IListResult<IShowItem>> {
     if (recentIds.length > 0) {
       const items = await this.showRepository.find({ where: { id: In(recentIds) } });
       return {
-        items: items.map(({ ororo, ac, imdb, ...item }: Shows) => ({
+        items: items.map(({ imdb, ...item }: Shows) => ({
           ...item,
-          resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
+          resources: [imdb && EResource.IMDB].filter((item) => item),
         })),
       };
     }
@@ -66,9 +70,9 @@ export class ShowService {
 
     const items = await queryBuilder.getMany();
 
-    return items.map(({ ororo, ac, imdb, ...item }: Shows) => ({
+    return items.map(({ imdb, ...item }: Shows) => ({
       ...item,
-      resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
+      resources: [imdb && EResource.IMDB].filter((item) => item),
     }));
   }
 
@@ -101,5 +105,59 @@ export class ShowService {
     const ids = await queryBuilder.insert().into(Shows).values(shows).orUpdate(updateFields, 'shows_pkey').execute();
 
     return ids.identifiers.map(({ id }) => id);
+  }
+
+  private async findShow(id: number): Promise<Shows> {
+    return await this.showRepository.findOne({
+      where: { id },
+      relations: {
+        episodes: true,
+      },
+      order: {
+        episodes: {
+          episode: 'ASC',
+        },
+      },
+    });
+  }
+
+  private async getShow(id: number, options: { forceUpdate?: boolean } = { forceUpdate: false }): Promise<Shows> {
+    const foundShow = await this.findShow(id);
+
+    if (foundShow?.sync > Date.now() - DAY && !options.forceUpdate) {
+      return foundShow;
+    }
+
+    const showData = await this.imdbService.getShow(foundShow.imdb);
+
+    if (showData.type === EShowTypes.TVSHOW) {
+      const episodes = await this.imdbService.getEpisodes(id, foundShow.imdb);
+      await this.addOrUpdateEpisodes(episodes);
+    }
+
+    await this.showRepository.update({ id }, { sync: Date.now() });
+
+    return await this.findShow(id);
+  }
+
+  public async getShowFiltered(id: number): Promise<ShowFiltered> {
+    const show = await this.getShow(id);
+    if (!show) {
+      return null;
+    }
+
+    const { imdb, ...filteredShow } = show;
+    return filteredShow;
+  }
+
+  async addOrUpdateEpisodes(episodes: Episodes[]): Promise<void> {
+    if (episodes.length === 0) {
+      return;
+    }
+
+    const queryBuilder = this.episodeRepository.createQueryBuilder();
+    await queryBuilder.insert().into(Episodes).values(episodes).orUpdate(['id'], 'episodes_pkey').execute();
+
+    return;
   }
 }

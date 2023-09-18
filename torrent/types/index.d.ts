@@ -1,7 +1,22 @@
-interface TorrentContentFile {
+
+/** 
+ * Enum for file types
+ * */
+export enum FileTypes {
+	VIDEO = 0,
+	SUBTITLES = 1,
+};
+
+/** 
+ * Interface for a torrent file
+ * */
+export interface TorrentContentFile {
+	id: number;
 	name: string;
-	size: number;
+	size: string;
+	rawSize: number;
 	path: string;
+	type: 'folder' | 'file' | 'movie' | 'subtitles';
 }
 
 /**

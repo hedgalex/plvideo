@@ -1,9 +1,9 @@
 export interface ISearchItem {
   id: number;
-  title: string;
+  name: string;
   magnet?: string;
-  seeds?: number;
-  peers?: number;
+  seeds?: string;
+  peers?: string;
   size?: string;
   date?: number;
 }

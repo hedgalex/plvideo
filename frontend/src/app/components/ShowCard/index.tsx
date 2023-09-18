@@ -1,60 +1,69 @@
-import { PropsWithChildren, useCallback, useState } from 'react';
-import { Box } from '@mui/material';
-
+import { useCallback } from 'react';
+import { Box, Tooltip } from '@mui/material';
+import { Rating } from '../Card/components/Rating';
+import { Title } from '../Card/components/Title';
+import { ExpandMoreButton } from './components/ExpandButton';
 import { EShowTypes } from '~shared/.consts';
-import { Card, CardProps } from '../Card';
-import { Sources } from './Sources';
-import { Details } from './Details';
-import { CardContent, Pages } from './styles';
+import { useShowPageNavigator } from '~app/hooks/useShowPageNavigator';
+import { CardExtends } from '../Card/.iface/CardExtends';
+import { Actions } from '../Card/styles';
+import { SourcesRoller } from './components/SourcesRoller';
+import { Attachment, AttachmentContent, CardStyled, ExpandingImage, RatingShift, Score, Year } from './styles';
 
-type ShowCardProps = CardProps & {
+export type ShowCardProps = CardExtends & {
+  image?: string;
+  title?: string;
   type?: EShowTypes;
+  popularity?: number;
+  popularityIncline?: number;
+  votedImdb?: number;
+  ratingImdb?: number;
+  year?: number;
+  isExpanded?: boolean;
+  onExpand?: (id: number) => void;
 };
 
-enum PageNames {
-  SOURCES,
-  DETAILS,
-}
+export const ShowCard: React.FC<ShowCardProps> = ({
+  id,
+  image,
+  title,
+  type,
+  popularity,
+  popularityIncline = 0,
+  votedImdb,
+  ratingImdb,
+  year,
+  isExpanded = false,
+  onExpand,
+}) => {
+  const { handleNavigate } = useShowPageNavigator(id);
 
-export const ShowCard: React.FC<PropsWithChildren<ShowCardProps>> = ({ id: cardId, type, isOpen, ...props }) => {
-  const [page, setPage] = useState<PageNames>(PageNames.SOURCES);
-  const [sourceId, setSourceId] = useState<number | null>(null);
-
-  const handleSourceClick = useCallback(
-    (sourceId: number) => {
-      setPage(PageNames.DETAILS);
-      setSourceId(sourceId);
-    },
-    [cardId],
-  );
-
-  const handleBackClick = useCallback(() => {
-    setPage(PageNames.SOURCES);
-    setSourceId(null);
-  }, []);
+  const handleExpandMoreClick = useCallback(() => {
+    onExpand?.(id);
+  }, [id]);
 
   return (
-    <Card
-      id={cardId}
-      isOpen={isOpen}
-      isImageInFullMode={isOpen}
-      subtitle={type === EShowTypes.MOVIE ? 'Movie' : 'TV Series'}
-      {...props}
-    >
-      {isOpen && (
-        <CardContent>
-          <Pages position={page}>
-            <Box>
-              <Box>
-                <Sources cardId={cardId} onSourceClick={handleSourceClick} />
-              </Box>
-              <Box>
-                <Details cardId={cardId} sourceId={sourceId} onBackClick={handleBackClick} />
-              </Box>
-            </Box>
-          </Pages>
-        </CardContent>
-      )}
-    </Card>
+    <Box mb="20px">
+      <CardStyled isSelected={isExpanded}>
+        <Rating score={popularity} shift={popularityIncline} />
+        <ExpandingImage src={image} isExpanding={isExpanded} />
+        <Title text={title} subText={type === EShowTypes.TVSHOW ? 'TV Series' : 'Movie'} onClick={handleNavigate} />
+        <Actions>
+          <ExpandMoreButton onClick={handleExpandMoreClick} isActive={isExpanded} />
+        </Actions>
+      </CardStyled>
+      <Attachment isVisible={isExpanded}>
+        <Year>{year}</Year>
+        <RatingShift score={Math.abs(popularityIncline)} shift={popularityIncline} />
+        <Tooltip title={`Voted: ${votedImdb}`}>
+          <Score>{ratingImdb?.toFixed(1)}</Score>
+        </Tooltip>
+        {isExpanded && (
+          <AttachmentContent>
+            <SourcesRoller cardId={id} />
+          </AttachmentContent>
+        )}
+      </Attachment>
+    </Box>
   );
 };

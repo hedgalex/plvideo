@@ -1,20 +1,21 @@
 import axios from 'axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { IImdbSearchItem } from './.ifaces/IImdbSearchItem';
-import { ISearchResultItem, ISources } from '~shared/.ifaces';
+import { ISearchResultItem, SourceContentItem, ISourceItem, ISources } from '~shared/.ifaces';
 import { EResource, EShowTypes } from '../shared/.consts';
 import { hashShowId } from '../utils/hash';
 import { ShowService } from '../shows/show.service';
-import { searchShowInOroro } from './utils/searchOroro';
-import { Episodes } from '../entities/episodes';
-import { Shows } from '../entities/shows';
-import { ISearchOptions } from './.ifaces/ISearchOptions';
-import { searchShowInTorrent } from './utils/searchTorrent';
-import { searchShowInAC } from './utils/searchAC';
+import { FilterOptions } from '~server/common/.ifaces';
+import { TorrentService } from '../sources/services/torrent.service';
+import { OroroService } from '../sources/services/ororo.service';
 
 @Injectable()
 export class SearchService {
-  constructor(@Inject(ShowService) private readonly showService: ShowService) {}
+  constructor(
+    @Inject(ShowService) private readonly showService: ShowService,
+    @Inject(OroroService) private readonly ororoService: OroroService,
+    @Inject(TorrentService) private readonly torrentService: TorrentService,
+  ) {}
 
   async search(text: string): Promise<ISearchResultItem[]> {
     const response = await axios(`https://v3.sg.media-imdb.com/suggestion/x/${text}.json`);
@@ -34,34 +35,77 @@ export class SearchService {
     });
   }
 
-  private getOptions(entity: Shows | Episodes): ISearchOptions {
-    if (entity instanceof Shows) {
-      return { type: entity.type, year: entity.year };
-    }
+  async searchSources(
+    cardId: number,
+    { filterUserView }: FilterOptions = { filterUserView: false },
+  ): Promise<ISources> {
+    const episode = await this.showService.getEpisodeEntityById(cardId);
+    const showId = episode?.showId ?? cardId;
+    const show = await this.showService.getShowEntityById(showId);
 
-    if (entity instanceof Episodes) {
-      return { episode: entity.episode, season: entity.season };
-    }
-  }
-
-  async searchSources(cardId: number): Promise<ISources> {
-    const show = await this.showService.getShowEntityById(cardId);
-    const entity = show ? show : await this.showService.getEpisodeEntityById(cardId);
-
-    if (!entity) {
+    if (!show) {
       return {};
     }
 
-    const options = this.getOptions(entity);
+    if (episode) {
+      const sourceOroro = await this.ororoService.getEpisode(show, episode, { filterUserView });
+      const sourceTorrent = await this.torrentService.getEpisode(show, episode, { filterUserView });
 
-    const sourceOroro = await searchShowInOroro(entity.title, options);
-    const sourceTorrent = await searchShowInTorrent(entity.title, options);
-    const sourceAC = await searchShowInAC(entity.title, options);
+      return {
+        ...(sourceOroro?.length ? { [EResource.ORORO]: sourceOroro } : {}),
+        ...(sourceTorrent?.length ? { [EResource.TORRENT]: sourceTorrent } : {}),
+      };
+    }
+
+    const sourceOroro = await this.ororoService.getShows(show, { filterUserView });
+    const sourceTorrent = await this.torrentService.getShows(show, { filterUserView });
 
     return {
       ...(sourceOroro?.length ? { [EResource.ORORO]: sourceOroro } : {}),
       ...(sourceTorrent?.length ? { [EResource.TORRENT]: sourceTorrent } : {}),
-      ...(sourceAC?.length ? { [EResource.AC]: sourceAC } : {}),
     };
+  }
+
+  async searchSourceById(
+    cardId: number,
+    sourceId: number,
+    options: FilterOptions = { filterUserView: false },
+  ): Promise<SourceContentItem[]> {
+    const sources = await this.searchSources(cardId, { filterUserView: false });
+    const source = Object.keys(sources).reduce((accumulator: ISourceItem & { key: EResource }, key) => {
+      const item = sources[key].find((item: ISourceItem) => item.id === sourceId);
+
+      if (item) {
+        accumulator = { key, ...item };
+      }
+
+      return accumulator;
+    }, {} as ISourceItem & { key: EResource });
+
+    switch (source.key) {
+      case EResource.ORORO:
+        return await this.ororoService.getSourceDetails(source.sourceId, options);
+      case EResource.TORRENT:
+        return await this.torrentService.getSourceDetails(source.magnet);
+      default:
+        return [];
+    }
+  }
+
+  async addSourcesToDownloadQueue(cardId: number, sourceId: number, fileIds: number[]): Promise<void> {
+    const sources = await this.searchSources(cardId, { filterUserView: true });
+    const sourceKey = Object.keys(sources).find((key) =>
+      sources[key].find((item: ISourceItem) => item.id === sourceId),
+    );
+
+    if (!sourceKey) {
+      return;
+    }
+
+    const source = sources[sourceKey];
+    const files = source?.filter((file: ISourceItem) => fileIds.includes(file.id));
+    console.info('files', files);
+
+    return;
   }
 }

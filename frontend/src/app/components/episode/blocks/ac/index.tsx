@@ -1,21 +1,21 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { ETaskStatus } from '~shared/.consts';
+import { EStatus } from '~shared/.consts';
 import { Action, StyledSpinner } from '../../styles';
 
 export interface IACDownloadButton {
-  status: ETaskStatus;
+  status: EStatus;
   onAction: () => void;
 }
 
 export const ACDownloadButton: React.FC<IACDownloadButton> = ({ status, onAction }) => {
   return (
     <>
-      {status === ETaskStatus.BUSY && <StyledSpinner />}
-      {status !== ETaskStatus.BUSY && (
+      {status === EStatus.BUSY && <StyledSpinner />}
+      {status !== EStatus.BUSY && (
         <Action status={status} onClick={onAction}>
-          {status === ETaskStatus.NONE && <DownloadIcon />}
-          {[ETaskStatus.IDLE, ETaskStatus.IN_PROGRESS, ETaskStatus.READY].includes(status) && <DeleteOutlineIcon />}
+          {status === EStatus.NONE && <DownloadIcon />}
+          {[EStatus.IDLE, EStatus.IN_PROGRESS, EStatus.READY].includes(status) && <DeleteOutlineIcon />}
         </Action>
       )}
     </>

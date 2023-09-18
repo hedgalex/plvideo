@@ -8,13 +8,15 @@
   "main": "./index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "start": "node ./index.js"
+    "start": "node ./index.js",
+    "test": ""
   },
   "dependencies": {
     "memory-cache": "^0.2.0",
     "webtorrent": "2.1.16"
   },
   "devDependencies": {
-    "@types/webtorrent": "0.109.3"
+    "@types/webtorrent": "0.109.3",
+    "jest": "^29.6.3"
   }
 }

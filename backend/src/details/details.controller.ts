@@ -1,26 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  ParseEnumPipe,
-  ParseIntPipe,
-  Post,
-  Put,
-  Query,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, ParseIntPipe, Post, Put, Query, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { EResource } from '~shared/.consts';
 import { DetailsService } from './details.service';
 import { RECENT_COOKIE_NAME, addRecent } from '../utils/recent';
+import { ShowService } from '../shows/show.service';
 
 @Controller('/api/details')
 export class DetailsController {
-  constructor(private readonly detailsService: DetailsService) {}
+  constructor(private readonly detailsService: DetailsService, private readonly showService: ShowService) {}
 
   @Get()
   async getDetails(
@@ -43,36 +30,6 @@ export class DetailsController {
   async getDetailsByShowId(): Promise<void> {
     this.detailsService.getDetailsTorrent();
     return;
-  }
-
-  @Post('/add')
-  async addDetails(
-    @Res() response: Response,
-    @Body('resource', new ParseEnumPipe(EResource)) resource: EResource,
-    @Body('resourceShowId') resourceShowId: string,
-    @Body('showId', ParseIntPipe) id: number,
-    @Query('force') force?: boolean,
-  ): Promise<void> {
-    try {
-      await this.detailsService.updateShowDetails(resource, id, resourceShowId, force);
-      response.status(HttpStatus.CREATED).send();
-    } catch (e) {
-      response.status(HttpStatus.METHOD_NOT_ALLOWED).send(e);
-    }
-  }
-
-  @Post('/update')
-  async updateDetails(
-    @Res() response: Response,
-    @Body('id', ParseIntPipe) id: number,
-    @Body('resource', new ParseEnumPipe(EResource)) resource: EResource,
-  ): Promise<void> {
-    try {
-      await this.detailsService.updateShowDetails(resource, id, undefined, !!resource);
-      response.status(HttpStatus.CREATED).send(await this.detailsService.getDetails(id));
-    } catch (e) {
-      response.status(HttpStatus.METHOD_NOT_ALLOWED).send(e);
-    }
   }
 
   @Delete()

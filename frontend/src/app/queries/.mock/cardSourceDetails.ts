@@ -1,53 +1,53 @@
+import { EFileTypes } from '~shared/.consts';
+
 export const cardSourceDetailsQueryResult = {
 	items: [
 		{
 			id: 1,
-			isFolder: true,
+			type: EFileTypes.FOLDER,
 			name: 'foldername',
 		},
 		{
 			id: 2,
-			isFolder: false,
+			type: EFileTypes.MOVIE,
 			name: 'filename.mp4',
 			size: '500MB',
 		},
 		{
 			id: 3,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_en.srt',
 			size: '3kB',
 		},
 		{
 			id: 4,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_ru.srt',
 			size: '3kB',
 		},
 		{
 			id: 5,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_sp.srt',
 			size: '3kB',
 		},
 		{
 			id: 6,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_jp.srt',
 			size: '3kB',
 		},
 		{
 			id: 7,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_pl.srt',
 			size: '3kB',
 		},
 		{
 			id: 8,
-			isFolder: false,
+			type: EFileTypes.SUBTITLES,
 			name: 'subtitles_fr.srt',
 			size: '3kB',
 		},
-		
 	],
-	
 };

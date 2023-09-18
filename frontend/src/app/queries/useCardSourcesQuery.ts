@@ -4,13 +4,13 @@ import { ISources } from '~shared/.ifaces';
 import { getCardSourcesEndpoint } from '../endpoints';
 // import { cardSourcesQueryResult } from './.mock/cardSources';
 
-interface UseCardSourcesQueryProps {
-  cardId?: number;
+interface UseShowQueryProps {
+  cardId?: number | string;
 }
 
 type CardSourcesQueryResult = ISources;
 
-export const useCardSourcesQuery = ({ cardId }: UseCardSourcesQueryProps): UseQueryResult<CardSourcesQueryResult> => {
+export const useCardSourcesQuery = ({ cardId }: UseShowQueryProps): UseQueryResult<CardSourcesQueryResult> => {
   const endpoint = getCardSourcesEndpoint(cardId ?? 0);
   return useQuery<CardSourcesQueryResult>(
     [endpoint],

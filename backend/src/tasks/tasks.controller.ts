@@ -13,14 +13,14 @@ import {
 import { TasksService } from './tasks.service';
 import { Response } from 'express';
 import { EResource } from '~shared/.consts';
-import { IDownload, IPageListResult, ITask } from '~shared/.ifaces';
+import { IDownload, IListResult, ITask } from '~shared/.ifaces';
 
 @Controller('/api')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get('/downloads')
-  async getDownloads(@Query('showId', ParseIntPipe) showId): Promise<IPageListResult<IDownload>> {
+  async getDownloads(@Query('showId', ParseIntPipe) showId): Promise<IListResult<IDownload>> {
     return await this.tasksService.getDownloads(showId);
   }
 

@@ -1,14 +1,14 @@
 import { Box } from '@mui/material';
-import { ETaskStatus } from '~shared/.consts';
+import { EStatus } from '~shared/.consts';
 import { Download, ProgressBlock } from '../styles';
 
 export interface IProgressProps {
   downloaded?: number;
-  status?: ETaskStatus;
+  status?: EStatus;
 }
 
-export const Progress: React.FC<IProgressProps> = ({ downloaded = 0, status = ETaskStatus.NONE }) => {
-  if (status === ETaskStatus.NONE) {
+export const Progress: React.FC<IProgressProps> = ({ downloaded = 0, status = EStatus.NONE }) => {
+  if (status === EStatus.NONE) {
     return <></>;
   }
 

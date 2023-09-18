@@ -1,5 +1,22 @@
 import styled, { createGlobalStyle } from 'styled-components';
 import { GlobalTheme } from './theme';
+import { Box } from '@mui/material';
+
+export interface ActiveProps {
+  isActive?: boolean;
+}
+
+export interface SelectedProps {
+  isSelected?: boolean;
+}
+
+export interface VisibilityProps {
+  isVisible?: boolean;
+}
+
+export interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger' | 'success' | 'warning';
+}
 
 export const GlobalStyle = createGlobalStyle<GlobalTheme<{ dark?: boolean }>>(
   ({ theme }) => `
@@ -39,36 +56,6 @@ export const GlobalStyle = createGlobalStyle<GlobalTheme<{ dark?: boolean }>>(
 `,
 );
 
-export const HighlightOrange = styled.div(
-  ({ theme }: GlobalTheme) => `
-  width: 1000px;
-  height: 1000px;
-  position: absolute;
-  top: -426px;
-  right: -100px;
-  background: radial-gradient(circle, ${theme?.colors.palette.watusi} 0%, ${theme?.colors.palette.watusi} 50%, transparent 51%, transparent 100%)
-
-  @media only screen and (max-width: 768px) {
-    display: none;
-  }
-`,
-);
-
-export const HighlightPurple = styled.div(
-  ({ theme }: GlobalTheme) => `
-  width: 1000px;
-  height: 1000px;
-  position: absolute;
-  top: 300px;
-  left: -400px;
-  background: radial-gradient(circle, ${theme?.colors.palette.melrose} 0%, ${theme?.colors.palette.melrose} 50%, transparent 51%, transparent 100%);
-
-  @media only screen and (max-width: 768px) {
-    display: none;
-  }
-`,
-);
-
 export const ProgressLoader = styled.div<{ loading: boolean }>(({ loading = false, theme }) => {
   if (loading) {
     const color1 = theme?.colors.palette.secondary_50;
@@ -99,3 +86,67 @@ export const ProgressLoader = styled.div<{ loading: boolean }>(({ loading = fals
       `;
   }
 });
+
+export const Flex = styled(Box)`
+  display: flex;
+`;
+
+export const Button = styled.div<ButtonProps>(
+  ({ theme, variant = 'primary' }) => `
+  display: flex;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  margin-right: 5px;
+  border-radius: 40%;
+  align-items: center;
+  cursor: pointer;
+  svg {
+    transition: transform 0.2s ease-in-out;
+    margin: 0 auto;
+  }
+
+  color: ${theme?.colors.palette.secondary_300};
+  border: 1px solid ${theme?.colors.palette.secondary_300};
+
+  ${(() => {
+    switch (variant) {
+      case 'secondary':
+        return `
+          &:hover {
+            color: ${theme?.colors.palette.secondary_500};
+            border-color: ${theme?.colors.palette.secondary_500};
+          }
+        `;
+      case 'danger':
+        return `
+          &:hover {
+            color: ${theme?.colors.palette.error_500};
+            border-color: ${theme?.colors.palette.error_500};
+          }
+        `;
+      case 'success':
+        return `
+          &:hover {
+            color: ${theme?.colors.palette.success_500};
+            border-color: ${theme?.colors.palette.success_500};
+          }
+        `;
+      case 'warning':
+        return `
+          &:hover {
+            color: ${theme?.colors.palette.warning_500};
+            border-color: ${theme?.colors.palette.warning_500};
+          }
+        `;
+      default:
+        return `
+          &:hover {
+            color: ${theme?.colors.palette.primary_300};
+            border-color: ${theme?.colors.palette.primary_300};
+          }
+        `;
+    }
+  })()}
+`,
+);

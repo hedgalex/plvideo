@@ -11,9 +11,8 @@ import { Repository } from 'typeorm';
 import { Episodes } from '../entities/episodes';
 import { IDetails } from './.ifaces/IDetails';
 import { IDetailsEpisode } from './.ifaces/IDetailsEpisode';
-import { getTorrentInfo } from 'plvideo-torrent';
+// import { getTorrentInfo } from 'plvideo-torrent';
 
-const DAY = 24 * 60 * 60 * 1000;
 const DEFAULT_POPULARITY = 999;
 
 @Injectable()
@@ -221,12 +220,11 @@ export class DetailsService {
   }
 
   async getDetailsTorrent(): Promise<void> {
-    const magnet =
-      'magnet:?xt=urn:btih:556BE0BD40C4880E29BA567663C65BD8BAE9FBEB&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.breizh.pm%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.com%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&dn=%5Bbitsearch.to%5D+Inside+Out+(2015)+%5B1080p%5D';
-    const path = '/Users/alex/Projects/plvideo/downloads';
-
-    const result = await getTorrentInfo(magnet, path);
-    console.info(result);
+    // const magnet =
+    //   'magnet:?xt=urn:btih:556BE0BD40C4880E29BA567663C65BD8BAE9FBEB&tr=udp%3A%2F%2Ftracker.bitsearch.to%3A1337%2Fannounce&tr=udp%3A%2F%2Fwww.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Ftracker.breizh.pm%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.com%3A2920%2Fannounce&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&dn=%5Bbitsearch.to%5D+Inside+Out+(2015)+%5B1080p%5D';
+    // const path = '/Users/alex/Projects/plvideo/downloads';
+    // const result = await getTorrentInfo(magnet, path);
+    // console.info(result);
   }
 
   async getDetails(showId: number): Promise<IPageShowInfo> {
@@ -248,14 +246,8 @@ export class DetailsService {
 
     return {
       ...show,
-      resources: [show.ororo && EResource.ORORO, show.ac && EResource.AC, show.imdb && EResource.IMDB].filter(
-        (item) => item,
-      ),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      episodes: show.episodes.map(({ ororo, imdb, ac, showId: _showId, ...episode }) => ({
-        ...episode,
-        resources: [ororo && EResource.ORORO, ac && EResource.AC, imdb && EResource.IMDB].filter((item) => item),
-      })),
+      episodes: show.episodes.map(({ showId: _showId, ...episode }) => episode),
     };
   }
 
@@ -270,129 +262,6 @@ export class DetailsService {
       case EResource.IMDB:
       default: {
         return await this.getDetailsImdb(id, resourceShowId);
-      }
-    }
-  }
-
-  async updateShowDetails(resource: EResource, id: number, resourceShowId?: string, force = false): Promise<void> {
-    const show = await this.showsRepository.findOne({ where: { id } });
-    const time = new Date().getTime();
-
-    if (time < show?.sync + DAY && !force && resource && show?.[resource] !== null) {
-      this.logger.log('Skipping update.');
-      return;
-    }
-
-    const resourceId =
-      resourceShowId ??
-      ((resource === EResource.IMDB && show.imdb) ||
-        (resource === EResource.ORORO && show.ororo) ||
-        (resource === EResource.AC && show.ac));
-
-    const details = await this.fetchDetails(id, resource, resourceId);
-
-    if (!show) {
-      await this.showsRepository.insert({
-        id,
-        title: details.title,
-        image: details.image,
-        description: details.description,
-        year: details.year,
-        ororo: details.ororo,
-        ac: details.ac,
-        imdb: details.imdb,
-        sync: time,
-        type: details.type,
-        ...(details.resource === EResource.IMDB && {
-          popularity: details.popularity,
-          popularityIncline: details.popularityIncline,
-          ratingImdb: details.ratingImdb,
-          votedImdb: details.votedImdb,
-        }),
-        ...(details.resource !== EResource.IMDB && {
-          popularity: DEFAULT_POPULARITY,
-        }),
-      });
-    } else {
-      await this.showsRepository.update(
-        {
-          id: show.id,
-        },
-        {
-          image: details.image,
-          description: details.description,
-          sync: time,
-          ororo: details.ororo ?? show.ororo,
-          ac: details.ac ?? show.ac,
-          imdb: details.imdb ?? show.imdb,
-          ...(details.resource === EResource.IMDB && {
-            popularity: details.popularity,
-            popularityIncline: details.popularityIncline,
-            ratingImdb: details.ratingImdb,
-            votedImdb: details.votedImdb,
-          }),
-        },
-      );
-    }
-
-    if (details.type === EShowTypes.MOVIE) {
-      const oldEpisode = await this.episodesRepository.findOne({ where: { showId: id } });
-
-      if (!oldEpisode) {
-        await this.episodesRepository.insert({
-          id,
-          showId: id,
-          episode: 0,
-          season: 0,
-          ororo: details.ororo ?? show?.ororo,
-          imdb: details.imdb ?? show?.imdb,
-          ac: details.ac ?? show?.ac,
-        });
-      } else {
-        await this.episodesRepository.update(
-          { id },
-          {
-            ororo: details.ororo ?? show?.ororo,
-            imdb: details.imdb ?? show?.imdb,
-            ac: details.ac ?? show?.ac,
-          },
-        );
-      }
-
-      return;
-    }
-
-    if (details.type === EShowTypes.TVSHOW) {
-      const oldEpisodes = await this.episodesRepository.find({ where: { showId: id } });
-      const newEpisodes = details.episodes.filter(
-        (newEpisode) => !oldEpisodes.find((oldEpisode) => oldEpisode.id === newEpisode.id),
-      );
-
-      if (newEpisodes.length > 0) {
-        await this.episodesRepository.insert(newEpisodes);
-      }
-
-      for await (const oldEpisode of oldEpisodes ?? []) {
-        const detailsEpisode = details.episodes.find((detailsEpisodeItem) => detailsEpisodeItem.id === oldEpisode.id);
-        if (
-          detailsEpisode &&
-          (detailsEpisode.imdb !== oldEpisode.imdb ||
-            detailsEpisode.ac !== oldEpisode.ac ||
-            detailsEpisode.ororo !== oldEpisode.ororo ||
-            detailsEpisode.release !== oldEpisode.release)
-        ) {
-          await this.episodesRepository.update(
-            {
-              id: oldEpisode.id,
-            },
-            {
-              imdb: oldEpisode.imdb ?? detailsEpisode.imdb,
-              ac: oldEpisode.ac ?? detailsEpisode.ac,
-              ororo: oldEpisode.ororo ?? detailsEpisode.ororo,
-              release: (detailsEpisode.release > 0 && detailsEpisode.release) || oldEpisode.release,
-            },
-          );
-        }
       }
     }
   }

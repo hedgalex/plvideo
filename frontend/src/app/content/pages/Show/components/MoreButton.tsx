@@ -1,18 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { EResource } from '~shared/.consts';
 import { DeleteMenuItem, ShowButton } from '../styles';
 
 interface IMoreButtonProps {
-  resources: EResource[];
   lastUpdate?: number | string;
   onDelete: () => void;
-  onUpdate: (resource: EResource) => void;
   onTypeChange: () => void;
 }
 
-export const MoreButton: React.FC<IMoreButtonProps> = ({ lastUpdate, resources, onDelete, onUpdate, onTypeChange }) => {
+export const MoreButton: React.FC<IMoreButtonProps> = ({ lastUpdate, onDelete, onTypeChange }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -51,11 +48,6 @@ export const MoreButton: React.FC<IMoreButtonProps> = ({ lastUpdate, resources, 
     setDialogOpen(true);
   };
 
-  const handleUpdateClick = (resource: EResource) => () => {
-    onUpdate?.(resource);
-    handleClose();
-  };
-
   return (
     <>
       <ShowButton
@@ -76,9 +68,6 @@ export const MoreButton: React.FC<IMoreButtonProps> = ({ lastUpdate, resources, 
         MenuListProps={{ 'aria-labelledby': 'basic-button' }}
       >
         <MenuItem disabled>{lastUpdateTime}</MenuItem>
-        {resources?.map((resource) => (
-          <MenuItem onClick={handleUpdateClick(resource)}>Update {resource}</MenuItem>
-        ))}
         <MenuItem onClick={handleChangeTypeClick}>Change type</MenuItem>
         <DeleteMenuItem onClick={handleDeleteClick}>Delete</DeleteMenuItem>
       </Menu>

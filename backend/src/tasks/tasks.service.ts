@@ -5,13 +5,13 @@ import { Repository } from 'typeorm';
 import { Tasks } from '~server/entities/tasks';
 import { configService } from '../config/config.service';
 import { DownloadService } from '../downloads/download.service';
-import { EResource, EShowTypes, ETaskStatus } from '~shared/.consts';
-import { IDownload, IPageListResult, ITask } from '../shared/.ifaces';
+import { EResource, EShowTypes, EStatus } from '~shared/.consts';
+import { IDownload, IListResult, ITask } from '../shared/.ifaces';
 import { Episodes } from '../entities/episodes';
 import { getMovieFilePath, getTVShowFilePath } from '../utils/paths';
 
-const ORORO_URL = 'https://ororo.tv/en';
-const AC_URL = 'https://z.animecult.org/serial/';
+// const ORORO_URL = 'https://ororo.tv/en';
+// const AC_URL = 'https://z.animecult.org/serial/';
 
 @Injectable()
 export class TasksService {
@@ -103,7 +103,7 @@ export class TasksService {
     }
   }
 
-  async getDownloads(showId: number): Promise<IPageListResult<IDownload>> {
+  async getDownloads(showId: number): Promise<IListResult<IDownload>> {
     const tasks = await this.tasksRepository.find({
       relations: { taskStatus: true, downloadResource: true, episode: { show: true } },
       order: { path: 'ASC' },
@@ -134,7 +134,7 @@ export class TasksService {
           title: episode.episodeTitle(),
           subtitle: episode.episodeSubtitle(),
           resources: [task.downloadResource.name as EResource],
-          status: task.taskStatus.name as ETaskStatus,
+          status: task.taskStatus.name as EStatus,
         });
       }
     });
@@ -157,7 +157,7 @@ export class TasksService {
           size: task.size,
           downloaded: task.downloaded,
           resource: task.downloadResource.name as EResource,
-          taskStatus: task.taskStatus.name as ETaskStatus,
+          taskStatus: task.taskStatus.name as EStatus,
           error: task.error,
           errorTime: task.errorTime,
         };
@@ -183,26 +183,26 @@ export class TasksService {
 
   async addOroroTask(episodeId: number) {
     const episode = await this.episodesRepository.findOne({ where: { id: episodeId }, relations: { show: true } });
-    if (!episode?.show?.ororo || !episode?.ororo) {
-      throw new Error('No episode found');
-    }
+    // if (!episode?.show?.ororo || !episode?.ororo) {
+    //   throw new Error('No episode found');
+    // }
 
     const { show } = episode;
-    const ororoId = show.ororo.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
+    // const ororoId = show.ororo.replace(/(shows|movies)-([\w-]*)/, '/$1/$2');
     if (show.type === EShowTypes.TVSHOW) {
-      const downloadUrl = `${ORORO_URL}${ororoId}/videos/${episode.ororo}/download`;
+      // const downloadUrl = `${ORORO_URL}${ororoId}/videos/${episode.ororo}/download`;
       this.tasksRepository.insert({
         id: episode.id,
         path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
-        url: downloadUrl,
+        // url: downloadUrl,
         downloadResourceId: 1,
       });
     } else {
-      const downloadUrl = `https://ororo.tv/en${ororoId}/download`;
+      // const downloadUrl = `https://ororo.tv/en${ororoId}/download`;
       this.tasksRepository.insert({
         id: episode.id,
         path: getMovieFilePath(show.title, show.year, 'mp4'),
-        url: downloadUrl,
+        // url: downloadUrl,
         downloadResourceId: 1,
       });
     }
@@ -210,24 +210,24 @@ export class TasksService {
 
   async addAnimeCultTask(episodeId: number) {
     const episode = await this.episodesRepository.findOne({ where: { id: episodeId }, relations: { show: true } });
-    if (!episode?.show?.ac) {
-      throw new Error('No episode found');
-    }
+    // if (!episode?.show?.ac) {
+    //   throw new Error('No episode found');
+    // }
 
     const { show } = episode;
-    const downloadUrl = `${AC_URL}${show.ac}/episode/${episode.episode}`;
+    // const downloadUrl = `${AC_URL}${show.ac}/episode/${episode.episode}`;
     if (show.type === EShowTypes.TVSHOW) {
       this.tasksRepository.insert({
         id: episode.id,
         path: getTVShowFilePath(show.title, show.year, episode.season, episode.episode, 'mp4'),
-        url: downloadUrl,
+        // url: downloadUrl,
         downloadResourceId: 2,
       });
     } else {
       this.tasksRepository.insert({
         id: episode.id,
         path: getMovieFilePath(show.title, show.year, 'mp4'),
-        url: downloadUrl,
+        // url: downloadUrl,
         downloadResourceId: 2,
       });
     }

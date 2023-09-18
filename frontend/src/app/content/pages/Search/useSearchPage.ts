@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { IState, useAppDispatch } from '~store/index';
 import { searchAction } from '~store/pageSlice';
 import { getHashParams } from '~components/episodes/utils';
-import { IPageListResult, IShowItem } from '~shared/.ifaces';
+import { IListResult, IShowItem } from '~shared/.ifaces';
 
 interface IUseSearchPage {
   isLoading: boolean;
@@ -21,7 +21,7 @@ export const useSearchPage = (): IUseSearchPage => {
   const [text, setText] = useState<string>('');
 
   const { isLoading, data } = useSelector((state: IState) => state.page);
-  const { items = [] } = data as IPageListResult<IShowItem>;
+  const { items = [] } = data as IListResult<IShowItem>;
 
   const dispatchSearch = (searchText: string) => {
     setText(searchText);

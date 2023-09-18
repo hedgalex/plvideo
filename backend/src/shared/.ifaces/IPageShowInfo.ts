@@ -6,7 +6,7 @@ export interface IPageShowInfo {
 	title: string;
 	image: string;
 	episodes: IEpisode[];
-	resources: EResource[];
+	resources?: EResource[];
 	type: EShowTypes;
 	description: string;
 	year: number;

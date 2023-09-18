@@ -1,4 +1,4 @@
-import { EResource, ETaskStatus } from '~shared/.consts';
+import { EResource, EStatus } from '~shared/.consts';
 
 export const tasks1 = [
   [
@@ -13,7 +13,7 @@ export const tasks1 = [
       size: '1275278871',
       downloaded: '0',
       resource: EResource.ORORO,
-      taskStatus: ETaskStatus.IN_PROGRESS,
+      taskStatus: EStatus.IN_PROGRESS,
     },
     {
       id: 741422564592334,
@@ -26,7 +26,7 @@ export const tasks1 = [
       size: '1248064712',
       downloaded: '1248064712',
       resource: EResource.ORORO,
-      taskStatus: ETaskStatus.READY,
+      taskStatus: EStatus.READY,
     },
   ],
 ];
@@ -43,7 +43,7 @@ export const tasks2 = [
     size: '2404483570',
     downloaded: '16547840',
     resource: EResource.ORORO,
-    taskStatus: ETaskStatus.IN_PROGRESS,
+    taskStatus: EStatus.IN_PROGRESS,
   },
   {
     id: 8470794612711960,
@@ -56,7 +56,7 @@ export const tasks2 = [
     size: '2234620026',
     downloaded: '58229632',
     resource: EResource.ORORO,
-    taskStatus: ETaskStatus.IN_PROGRESS,
+    taskStatus: EStatus.IN_PROGRESS,
   },
   {
     id: 6576424532871056,
@@ -69,7 +69,7 @@ export const tasks2 = [
     size: '2747497264',
     downloaded: '186442880',
     resource: EResource.ORORO,
-    taskStatus: ETaskStatus.IN_PROGRESS,
+    taskStatus: EStatus.IN_PROGRESS,
   },
   {
     id: 4539730022297859,
@@ -82,6 +82,6 @@ export const tasks2 = [
     size: '113656998',
     downloaded: '113656998',
     resource: EResource.AC,
-    taskStatus: ETaskStatus.READY,
+    taskStatus: EStatus.READY,
   },
 ];
