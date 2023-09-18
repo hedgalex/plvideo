@@ -112,7 +112,7 @@ export const Col = styled(Box)<{ type: 'name' | 'size' | 'peers' | 'seeds' | 'ic
   ({ type, theme }: GlobalTheme<{ type: 'name' | 'size' | 'peers' | 'seeds' | 'icon' | 'default' }>) => `
   padding: 0;
   margin: 4px;
-  text-align: center;
+  text-align: left;
   
   ${(() => {
     switch (type) {
@@ -121,21 +121,25 @@ export const Col = styled(Box)<{ type: 'name' | 'size' | 'peers' | 'seeds' | 'ic
           text-align: left;
           flex-grow: 1;
           cursor: pointer;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 300px;
         `;
       case 'size':
         return `
-          width: 40px;
+          width: 50px;
           padding: 0 4px;
           color: ${theme?.colors.palette.secondary_500};
         `;
       case 'peers':
         return `
-          width: 20px;
+          width: 25px;
           color: ${theme?.colors.palette.success_500};
       `;
       case 'seeds':
         return `
-          width: 20px;
+          width: 25px;
           color: ${theme?.colors.palette.primary_500};
         `;
       case 'icon':
